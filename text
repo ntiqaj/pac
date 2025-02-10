@@ -107,3 +107,90 @@ export default KPI;
       </DialogContent>
     </Dialog>
 }
+
+
+"use client";
+import React, { useState } from "react";
+import { Pie } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+
+// Register Chart.js components
+ChartJS.register(ArcElement, Tooltip, Legend);
+
+// Define TypeScript Interface for KPI data
+interface KPIItem {
+  title: string;
+  value: string;
+}
+
+const KPI = () => {
+  // KPI Data with Type
+  const kpiData: KPIItem[] = [
+    { title: "Revenue", value: "$500K" },
+    { title: "Users", value: "12,000" },
+    { title: "Orders", value: "1,500" },
+    { title: "Conversion Rate", value: "5.2%" },
+  ];
+
+  // State for Modal
+  const [selectedKPI, setSelectedKPI] = useState<KPIItem | null>(null);
+
+  // Chart Data
+  const getChartData = (title: string) => {
+    return {
+      labels: ["Category A", "Category B", "Category C"],
+      datasets: [
+        {
+          data: [Math.random() * 100, Math.random() * 100, Math.random() * 100],
+          backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
+        },
+      ],
+    };
+  };
+
+  return (
+    <div className="flex justify-center flex-wrap p-5 gap-5">
+      {kpiData.map((kpi, index) => (
+        <Dialog key={index}>
+          <DialogTrigger asChild>
+            <div
+              className="bg-[#D2B48C] p-5 rounded-lg shadow-md text-center w-44 cursor-pointer"
+              onClick={() => setSelectedKPI(kpi)}
+            >
+              <h3 className="text-lg text-gray-800 mb-2 font-semibold">
+                {kpi.title}
+              </h3>
+              <p className="text-xl font-bold text-blue-700">{kpi.value}</p>
+            </div>
+          </DialogTrigger>
+          {selectedKPI && (
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>{selectedKPI.title} Data</DialogTitle>
+                <DialogDescription>
+                  Below is the data visualization for {selectedKPI.title}.
+                </DialogDescription>
+              </DialogHeader>
+              <Pie data={getChartData(selectedKPI.title)} />
+              <DialogFooter>
+                <Button onClick={() => setSelectedKPI(null)}>Close</Button>
+              </DialogFooter>
+            </DialogContent>
+          )}
+        </Dialog>
+      ))}
+    </div>
+  );
+};
+
+export default KPI;
