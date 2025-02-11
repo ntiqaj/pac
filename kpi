@@ -92,3 +92,104 @@ export const KpiCard = () => {
     </div>
   );
 };
+
+import React, { useState } from "react";
+import { Pie } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+} from "@/components/ui/card";
+
+// Register Chart.js components
+ChartJS.register(ArcElement, Tooltip, Legend);
+
+// Define TypeScript Interface for KPI data
+interface KPIItem {
+  title: string;
+  value: string;
+}
+
+export const KpiCard = () => {
+  // KPI Data with Type
+  const kpiData: KPIItem[] = [
+    { title: "Total Customers", value: "98,917" },
+    { title: "Android Users", value: "19,425" },
+    { title: "iOS Users", value: "X,XXX" },
+    { title: "Total Sessions", value: "972,483" },
+  ];
+
+  // State for Modal
+  const [selectedKPI, setSelectedKPI] = useState<KPIItem | null>(null);
+
+  // Chart Data
+  const getChartData = () => {
+    return {
+      labels: ["V1.0.3", "V1.0.2", "V1.0.5", "V1.0.6", "V1.0.4"],
+      datasets: [
+        {
+          data: [61857, 16679, 14308, 6036, 37],
+          backgroundColor: ["#36A2EB", "#FF6384", "#FFCE56", "#4BC0C0", "#9966FF"],
+        },
+      ],
+    };
+  };
+
+  return (
+    <div className="flex justify-center flex-wrap p-5 gap-5">
+      {kpiData.map((kpi, index) => (
+        <Dialog key={index}>
+          <DialogTrigger asChild>
+            <Card
+              className="p-3 bg-[#F3eddf] rounded-xl border border-gray-300 shadow-sm text-center w-52 cursor-pointer transition-transform transform hover:scale-105 hover:shadow-md"
+              onClick={() => setSelectedKPI(kpi)}
+            >
+              <CardHeader>
+                <p className="text-black text-lg font-semibold">{kpi.title}</p>
+                <h3 className="text-black text-xl font-bold">{kpi.value}</h3>
+              </CardHeader>
+            </Card>
+          </DialogTrigger>
+          {selectedKPI && (
+            <DialogContent className="bg-white rounded-lg shadow-lg p-5 max-w-lg w-full">
+              <button
+                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                onClick={() => setSelectedKPI(null)}
+              >
+                ✖
+              </button>
+              <DialogHeader>
+                <DialogTitle className="text-lg font-bold text-gray-900">
+                  {selectedKPI.title}
+                </DialogTitle>
+                <DialogDescription className="text-sm text-gray-600">
+                  Customers - {selectedKPI.value}
+                </DialogDescription>
+              </DialogHeader>
+              <CardContent className="flex justify-center">
+                <Pie data={getChartData()} />
+              </CardContent>
+              <DialogFooter className="flex justify-end mt-4">
+                <Button onClick={() => setSelectedKPI(null)} className="bg-blue-500 hover:bg-blue-600 text-white">
+                  Close
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          )}
+        </Dialog>
+      ))}
+    </div>
+  );
+};
+
