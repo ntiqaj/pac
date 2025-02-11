@@ -256,33 +256,31 @@ export const KpiCard = () => {
   };
 
   // ✅ Added Doughnut Effect with White Inner Circle
-  const getChartOptions = (title: string) => {
-    const values = [50, 30, 20];
-    const categories = ["Category A", "Category B", "Category C"];
+  const getChartOptions = (title: string): ChartOptions => { // ✅ Ensure correct return type
+  const values = [50, 30, 20];
+  const categories = ["Category A", "Category B", "Category C"];
 
-    return {
-      cutout: "50%", // ✅ Creates a white inner circle inside the Pie chart
-      plugins: {
-        legend: {
-          position: "right",
-          labels: {
-            generateLabels: (chart) => {
-              const dataset = chart.data.datasets[0];
-              return dataset.data.map((value, index) => ({
-                text: `${chart.data.labels[index]} - ${value}`, // ✅ Legend now shows "Category A - 50"
-                fillStyle: dataset.backgroundColor[index],
-                hidden: false,
-                lineWidth: 0,
-              }));
-            },
+  return {
+    cutout: "50%",
+    plugins: {
+      legend: {
+        position: "right",
+        labels: {
+          generateLabels: (chart: ChartJS) => { // ✅ Explicitly define chart type
+            const dataset = chart.data.datasets[0];
+            return dataset.data.map((value: number, index: number) => ({ // ✅ Explicitly define value & index types
+              text: `${chart.data.labels?.[index]} - ${value}`, // ✅ Ensure labels exist
+              fillStyle: dataset.backgroundColor[index],
+              hidden: false,
+              lineWidth: 0,
+            }));
           },
         },
       },
-    };
+    },
   };
-
-  return (
-    <div className="flex justify-center flex-wrap p-5 gap-5">
+};
+assName="flex justify-center flex-wrap p-5 gap-5">
       {kpiData.map((kpi, index) => (
         <Dialog key={index}>
           <DialogTrigger asChild>
