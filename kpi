@@ -329,11 +329,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
 
 // Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -346,7 +342,7 @@ interface KPIItem {
 
 // Component Definition
 export const KpiCard: React.FC = () => {
-  // KPI Data with Type
+  // KPI Data
   const kpiData: KPIItem[] = [
     { title: "Revenue", value: "$500K" },
     { title: "Users", value: "12,000" },
@@ -357,7 +353,7 @@ export const KpiCard: React.FC = () => {
   // State for Modal
   const [selectedKPI, setSelectedKPI] = useState<KPIItem | null>(null);
 
-  // ✅ Updated Chart Data Function
+  // ✅ Chart Data Function
   const getChartData = (title: string): ChartData<"pie"> => {
     const values = [50, 30, 20]; // Example values
     const categories = ["Category A", "Category B", "Category C"];
@@ -377,8 +373,8 @@ export const KpiCard: React.FC = () => {
     };
   };
 
-  // ✅ Added Doughnut Effect with White Inner Circle
-  const getChartOptions = (title: string): ChartOptions<"pie"> => { 
+  // ✅ Fixed Chart Options Function
+  const getChartOptions = (title: string): ChartOptions<"pie"> => {
     return {
       cutout: "50%", // ✅ Creates the white circle in the middle
       plugins: {
@@ -387,9 +383,11 @@ export const KpiCard: React.FC = () => {
           labels: {
             generateLabels: (chart: ChartJS) => {
               const dataset = chart.data.datasets[0];
+              const labels = chart.data.labels as string[]; // ✅ Ensure labels exist
+
               return dataset.data.map((value: number, index: number) => ({
-                text: `${chart.data.labels?.[index]} - ${value}`, // ✅ Ensure labels exist
-                fillStyle: dataset.backgroundColor[index] as string,
+                text: `${labels[index]} - ${value}`, // ✅ No more red underline
+                fillStyle: (dataset.backgroundColor as string[])[index], // ✅ Ensure it's treated as an array
                 hidden: false,
                 lineWidth: 0,
               }));
@@ -436,3 +434,4 @@ export const KpiCard: React.FC = () => {
     </div>
   );
 };
+
