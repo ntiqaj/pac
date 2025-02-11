@@ -318,7 +318,7 @@ assName="flex justify-center flex-wrap p-5 gap-5">
 
 import React, { useState } from "react";
 import { Pie } from "react-chartjs-2";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, ChartOptions, ChartData } from "chart.js";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, ChartOptions, Chart } from "chart.js";
 import {
   Dialog,
   DialogTrigger,
@@ -354,7 +354,7 @@ export const KpiCard: React.FC = () => {
   const [selectedKPI, setSelectedKPI] = useState<KPIItem | null>(null);
 
   // ✅ Chart Data Function
-  const getChartData = (title: string): ChartData<"pie"> => {
+  const getChartData = (title: string) => {
     const values = [50, 30, 20]; // Example values
     const categories = ["Category A", "Category B", "Category C"];
 
@@ -381,16 +381,18 @@ export const KpiCard: React.FC = () => {
         legend: {
           position: "right",
           labels: {
-            generateLabels: (chart: ChartJS) => {
+            generateLabels: (chart: Chart) => { // ✅ Corrected chart type
               const dataset = chart.data.datasets[0];
-              const labels = chart.data.labels as string[]; // ✅ Ensure labels exist
+              const labels = (chart.data.labels ?? []) as string[]; // ✅ Ensure labels exist
 
-              return dataset.data.map((value: number, index: number) => ({
-                text: `${labels[index]} - ${value}`, // ✅ No more red underline
-                fillStyle: (dataset.backgroundColor as string[])[index], // ✅ Ensure it's treated as an array
+              return dataset?.data?.map((value, index) => ({
+                text: `${labels[index] ?? "Unknown"} - ${value}`, // ✅ Avoids undefined labels
+                fillStyle: (Array.isArray(dataset.backgroundColor) ? dataset.backgroundColor : [])[
+                  index
+                ] as string, // ✅ Ensures correct type
                 hidden: false,
                 lineWidth: 0,
-              }));
+              })) || [];
             },
           },
         },
@@ -434,4 +436,5 @@ export const KpiCard: React.FC = () => {
     </div>
   );
 };
+
 
