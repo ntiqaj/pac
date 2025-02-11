@@ -316,3 +316,124 @@ assName="flex justify-center flex-wrap p-5 gap-5">
   );
 };
 
+import React, { useState } from "react";
+import { Pie } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, ChartOptions } from "chart.js";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+} from "@/components/ui/card";
+
+// Register Chart.js components
+ChartJS.register(ArcElement, Tooltip, Legend);
+
+// Define TypeScript Interface for KPI data
+interface KPIItem {
+  title: string;
+  value: string;
+}
+
+export const KpiCard = () => {
+  // KPI Data with Type
+  const kpiData: KPIItem[] = [
+    { title: "Revenue", value: "$500K" },
+    { title: "Users", value: "12,000" },
+    { title: "Orders", value: "1,500" },
+    { title: "Conversion Rate", value: "5.2%" },
+  ];
+
+  // State for Modal
+  const [selectedKPI, setSelectedKPI] = useState<KPIItem | null>(null);
+
+  // ✅ Updated Chart Data Function
+  const getChartData = (title: string) => {
+    const values = [50, 30, 20]; // Example values
+    const categories = ["Category A", "Category B", "Category C"];
+
+    return {
+      labels: categories,
+      datasets: [
+        {
+          label: "KPIs",
+          data: values,
+          backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
+          borderColor: "#ffffff",
+          borderWidth: 2,
+          hoverOffset: 10,
+        },
+      ],
+    };
+  };
+
+  // ✅ Added Doughnut Effect with White Inner Circle
+  const getChartOptions = (title: string): ChartOptions => { 
+    return {
+      cutout: "50%",
+      plugins: {
+        legend: {
+          position: "right",
+          labels: {
+            generateLabels: (chart) => {
+              const dataset = chart.data.datasets[0];
+              return dataset.data.map((value: number, index: number) => ({
+                text: `${chart.data.labels?.[index]} - ${value}`,
+                fillStyle: dataset.backgroundColor[index],
+                hidden: false,
+                lineWidth: 0,
+              }));
+            },
+          },
+        },
+      },
+    };
+  };
+
+  return (
+    <div className="flex justify-center flex-wrap p-5 gap-5">
+      {kpiData.map((kpi, index) => (
+        <Dialog key={index} onOpenChange={(open) => !open && setSelectedKPI(null)}>
+          <DialogTrigger asChild>
+            <Card
+              className="p-3 bg-[#F3eddf] rounded-xl border border-gray-300 shadow-sm text-center w-52 cursor-pointer transition-transform transform hover:scale-105 hover:shadow-md flex flex-col justify-between overflow-hidden"
+              onClick={() => setSelectedKPI(kpi)}
+            >
+              <CardHeader>
+                <p className="text-black text-lg font-semibold">{kpi.title}</p>
+                <h3 className="text-black text-xl font-bold">{kpi.value}</h3>
+              </CardHeader>
+            </Card>
+          </DialogTrigger>
+          {selectedKPI && (
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>{selectedKPI.title} Data</DialogTitle>
+                <DialogDescription>
+                  Below is the data visualization for {selectedKPI.title}.
+                </DialogDescription>
+              </DialogHeader>
+              <CardContent>
+                <Pie data={getChartData(selectedKPI.title)} options={getChartOptions(selectedKPI.title)} />
+              </CardContent>
+              <DialogFooter>
+                <Button onClick={() => setSelectedKPI(null)}>Close</Button>
+              </DialogFooter>
+            </DialogContent>
+          )}
+        </Dialog>
+      ))}
+    </div>
+  );
+};
+
+
