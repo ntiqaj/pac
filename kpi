@@ -318,7 +318,7 @@ assName="flex justify-center flex-wrap p-5 gap-5">
 
 import React, { useState } from "react";
 import { Pie } from "react-chartjs-2";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, ChartOptions } from "chart.js";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, ChartOptions, ChartData } from "chart.js";
 import {
   Dialog,
   DialogTrigger,
@@ -344,7 +344,8 @@ interface KPIItem {
   value: string;
 }
 
-export const KpiCard = () => {
+// Component Definition
+export const KpiCard: React.FC = () => {
   // KPI Data with Type
   const kpiData: KPIItem[] = [
     { title: "Revenue", value: "$500K" },
@@ -357,7 +358,7 @@ export const KpiCard = () => {
   const [selectedKPI, setSelectedKPI] = useState<KPIItem | null>(null);
 
   // ✅ Updated Chart Data Function
-  const getChartData = (title: string) => {
+  const getChartData = (title: string): ChartData<"pie"> => {
     const values = [50, 30, 20]; // Example values
     const categories = ["Category A", "Category B", "Category C"];
 
@@ -377,18 +378,18 @@ export const KpiCard = () => {
   };
 
   // ✅ Added Doughnut Effect with White Inner Circle
-  const getChartOptions = (title: string): ChartOptions => { 
+  const getChartOptions = (title: string): ChartOptions<"pie"> => { 
     return {
-      cutout: "50%",
+      cutout: "50%", // ✅ Creates the white circle in the middle
       plugins: {
         legend: {
           position: "right",
           labels: {
-            generateLabels: (chart) => {
+            generateLabels: (chart: ChartJS) => {
               const dataset = chart.data.datasets[0];
               return dataset.data.map((value: number, index: number) => ({
-                text: `${chart.data.labels?.[index]} - ${value}`,
-                fillStyle: dataset.backgroundColor[index],
+                text: `${chart.data.labels?.[index]} - ${value}`, // ✅ Ensure labels exist
+                fillStyle: dataset.backgroundColor[index] as string,
                 hidden: false,
                 lineWidth: 0,
               }));
@@ -435,5 +436,3 @@ export const KpiCard = () => {
     </div>
   );
 };
-
-
