@@ -1,10 +1,22 @@
 "use client"
 
-import { useState } from "react"
-import { TrendingUp, TrendingDown } from "lucide-react"
-import { Bar, BarChart, CartesianGrid, XAxis, Tooltip } from "recharts"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
+import { useState } from "react";
+import { TrendingUp, TrendingDown } from "lucide-react";
+import { Line, LineChart, CartesianGrid, XAxis } from "recharts";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 
 const chartData = [
   { month: "January", desktop: 186 },
@@ -12,75 +24,39 @@ const chartData = [
   { month: "March", desktop: 237 },
   { month: "April", desktop: 73 },
   { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 }
-]
+  { month: "June", desktop: 214 },
+];
 
 const chartConfig = {
-  default: {
-    label: "Value",
-    color: "hsl(var(--chart-1))"
-  }
-} satisfies ChartConfig
+  desktop: { label: "Desktop", color: "hsl(var(--chart-1))" },
+} satisfies ChartConfig;
 
-interface BarChartComponentProps {
-  title?: string 
-  description?: string 
-  data?: { [key: string]: string | number }[] 
-}
+const LineChartComponent = ({
+  xAxisKey = "month",
+  yAxisKey = "desktop",
+  title = "Line Chart",
+  data = chartData,
+}: {
+  xAxisKey?: string;
+  yAxisKey?: string;
+  title?: string;
+  data?: { [key: string]: string | number }[];
+}) => {
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
-export const BarChartComponent = ({
-  title = "Bar Chart",
-  data = chartData
-}: BarChartComponentProps) => {
-  const [activeIndex, setActiveIndex] = useState<number | null>(null)
-
-  const keys = data.length > 0 ? Object.keys(data[0]) : []
-  const nameKey = keys[0] 
-  const dataKey = keys[1] 
-  const dynamicLabel = dataKey ? dataKey.toLowerCase() : "data"
-  const dataCount = data.length
-
+  // Function to calculate percentage change
   const calculatePercentageChange = (currentIndex: number) => {
-    if (currentIndex <= 0 || currentIndex >= data.length) return 0
-    const currentValue = Number(data[currentIndex]?.[dataKey]) || 0
-    const previousValue = Number(data[currentIndex - 1]?.[dataKey]) || 0
-    if (previousValue === 0) return 0
-    return ((currentValue - previousValue) / previousValue) * 100
-  }
+    if (currentIndex <= 0 || currentIndex >= data.length) return 0;
+    const currentValue = Number(data[currentIndex]?.[yAxisKey]) || 0;
+    const previousValue = Number(data[currentIndex - 1]?.[yAxisKey]) || 0;
+    if (previousValue === 0) return 0;
+    return ((currentValue - previousValue) / previousValue) * 100;
+  };
 
-  const percentageChange = activeIndex !== null && activeIndex > 0 ? calculatePercentageChange(activeIndex) : 0
-  const isTrendingUp = percentageChange >= 0
+  const percentageChange = activeIndex !== null && activeIndex > 0 ? calculatePercentageChange(activeIndex) : 0;
+  const isTrendingUp = percentageChange >= 0;
 
-  const determineTimePeriod = (data: { [key: string]: string | number }[]) => {
-    const firstItem = data[0]
-    const lastItem = data[data.length - 1]
-
-    const startTime = firstItem[nameKey] as string
-    const endTime = lastItem[nameKey] as string
-    const descriptionParts = []
-
-    if (startTime && endTime) {
-      descriptionParts.push(`${startTime} - ${endTime} 2024`)
-    }
-
-    return descriptionParts.join(" ")
-  }
-
-  const dynamicDescription = determineTimePeriod(data)
-
-  // Function to infer the time period (Month, Week, Year, or Day)
-  const getPeriodType = () => {
-    // If the nameKey represents months, weeks, or years, we will determine it based on the data.
-    if (data.length > 0 && nameKey === "month") {
-      return "month(s)"
-    }
-
-    // Here, you can add more conditions to detect Week, Day, or Year if the data corresponds to those.
-    // For now, it's based on "month", but you can extend this for other periods.
-    return "period(s)"  // Fallback if no match
-  }
-
-  const periodType = getPeriodType()
+  const dynamicDescription = `${data[0]?.[xAxisKey]} - ${data[data.length - 1]?.[xAxisKey]} 2024`;
 
   return (
     <Card>
@@ -90,26 +66,22 @@ export const BarChartComponent = ({
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <BarChart
-            accessibilityLayer
-            data={data}
-            onMouseMove={(state) => {
-              setActiveIndex(state?.activeTooltipIndex ?? null)}}
-            onMouseLeave={() => setActiveIndex(null)}>
+          <LineChart data={data} margin={{ left: 12, right: 12 }}>
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey={nameKey}
+              dataKey={xAxisKey}
               tickLine={false}
-              tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => String(value).slice(0, 3)}/>
-            <Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <Bar dataKey={dataKey} fill="#C4B5FD" radius={8} />
-          </BarChart>
+              tickMargin={8}
+              tickFormatter={(value) => value.slice(0, 3)}
+            />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+            <Line dataKey={yAxisKey} type="natural" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={false} />
+          </LineChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
+      <CardFooter>
+        <div className="flex items-center gap-2 font-medium leading-none">
           {isTrendingUp ? (
             <>Trending up by {percentageChange.toFixed(2)}% this period <TrendingUp className="h-4 w-4" /></>
           ) : (
@@ -117,9 +89,11 @@ export const BarChartComponent = ({
           )}
         </div>
         <div className="leading-none text-muted-foreground">
-          Showing total {dynamicLabel} for the last {dataCount} {periodType}
+          Showing total visitors for the last {data.length} months
         </div>
       </CardFooter>
     </Card>
-  )
-}
+  );
+};
+
+export default LineChartComponent;
