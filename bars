@@ -64,7 +64,7 @@ export const PieChartComponent = ({
     const config: { [key: string]: { label: string, color: string } } = {}  // Declare config type
     data.forEach((item) => {
       const label = item[nameKey] as string
-      const color = item.fill || "hsl(var(--chart-1))" // Use `fill` or default to a color variable
+      const color = item["fill"] || "hsl(var(--chart-1))" // Use `fill` or default to a color variable
       config[label] = { label, color }
     })
     return config
