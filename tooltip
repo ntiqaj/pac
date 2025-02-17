@@ -34,7 +34,7 @@ const BarChartComponent = ({ dataKey1 = "running", dataKey2 = "swimming" }) => (
           <ChartTooltip content={<ChartTooltipContent hideLabel className="w-[180px]" formatter={(value, name, item, index) => (
             <div className="flex items-center gap-2">
               <div className="h-2.5 w-2.5 shrink-0 rounded-[2px] bg-current" style={{ backgroundColor: chartConfig[name]?.color || "hsl(var(--muted))" }} />
-              {chartConfig[name]?.label || name}
+              {chartConfig[name]?.label ?? name}
               <div className="ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground">{value}
                 <span className="font-normal text-muted-foreground">kcal</span>
               </div>
