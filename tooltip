@@ -32,7 +32,8 @@ const BarChartComponent = ({ dataKey1 = "running", dataKey2 = "swimming" }) => (
           <Bar dataKey={dataKey1} stackId="a" fill={`hsl(var(--chart-1))`} radius={[0, 0, 4, 4]} />
           <Bar dataKey={dataKey2} stackId="a" fill={`hsl(var(--chart-2))`} radius={[4, 4, 0, 0]} />
           <ChartTooltip content={<ChartTooltipContent hideLabel className="w-[180px]" formatter={(value, name, item, index) => {
-            const configItem = chartConfig[name];
+            // Explicitly assert `name` as keyof chartConfig
+            const configItem = chartConfig[name as keyof typeof chartConfig];
             return (
               <div className="flex items-center gap-2">
                 <div className="h-2.5 w-2.5 shrink-0 rounded-[2px] bg-current" style={{ backgroundColor: configItem?.color || "hsl(var(--muted))" }} />
