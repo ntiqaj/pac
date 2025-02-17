@@ -5,6 +5,7 @@ import { Pie, PieChart } from "recharts"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 
+// Define the interface for the data
 interface PieChartComponentProps {
   title?: string
   description?: string
@@ -59,18 +60,21 @@ export const PieChartComponent = ({
 
   const dynamicDescription = determineTimePeriod(data)
 
-  // Dynamically create chartConfig based on the data
-  const generateChartConfig = (data: { [key: string]: string | number }[]): Record<string, { label: string, color: string }> => {
-    const config: Record<string, { label: string, color: string }> = {}  // Define the type here
+  // Dynamically create chartConfig
+  const generateChartConfig = (data: { [key: string]: string | number }[]): { [key: string]: { label: string, color: string } } => {
+    const config: { [key: string]: { label: string, color: string } } = {}
+
     data.forEach((item) => {
       const label = item[nameKey] as string
-      const color = item["fill"] || "hsl(var(--chart-1))" // Use `fill` or default to a color variable
+      const color = item["fill"] || "hsl(var(--chart-1))" // Default to color if 'fill' is not defined
       config[label] = { label, color }
     })
+
     return config
   }
 
-  const chartConfig = generateChartConfig(data) // Generate the dynamic chartConfig
+  // Generate the dynamic config
+  const chartConfig = generateChartConfig(data)
 
   return (
     <Card className="flex flex-col">
