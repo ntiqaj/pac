@@ -24,7 +24,7 @@ const chartData = [
   { browser: "safari", visitors: 1260, fill: "var(--color-safari)" },
 ];
 
-const chartConfig = {
+const chartConfig: ChartConfig = {
   visitors: {
     label: "Visitors",
   },
@@ -32,14 +32,14 @@ const chartConfig = {
     label: "Safari",
     color: "hsl(var(--chart-2))",
   },
-} satisfies ChartConfig;
+};
 
 interface RadialChartProps {
-  dataKey: keyof typeof chartData[0];
-  nameKey: keyof typeof chartData[0];
+  dataKey?: keyof typeof chartData[0];
+  nameKey?: keyof typeof chartData[0];
 }
 
-const RadialChartComponent: React.FC<RadialChartProps> = ({ dataKey = "visitors", nameKey = "browser" }) => {
+export const RadialChartComponent: React.FC<RadialChartProps> = ({ dataKey = "visitors", nameKey = "browser" }) => {
   const value = chartData[0]?.[dataKey];
 
   return (
@@ -80,27 +80,16 @@ const RadialChartComponent: React.FC<RadialChartProps> = ({ dataKey = "visitors"
   );
 };
 
-const meta: Meta<typeof RadialChartComponent> = {
+const meta: Meta = {
   title: "UI/RadialChart",
   component: RadialChartComponent,
   tags: ["autodocs"],
 };
 
 export default meta;
+
 type Story = StoryObj<typeof RadialChartComponent>;
 
 export const Default: Story = {
   render: () => <RadialChartComponent dataKey="visitors" nameKey="browser" />,
 };
-
-
-Error: Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
-  at createFiberFromElement (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:13414:14))
-  at reconcileChildFibersImpl (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:7046:31))
-  at /vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:7223:33
-  at reconcileChildren (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:7786:13))
-  at updateFunctionComponent (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:8083:7))
-  at beginWork (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:9723:18))
-  at runWithFiberInDEV (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:578:16))
-  at performUnitOfWork (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:15098:22))
-  at workLoopSync (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:14922:41))
