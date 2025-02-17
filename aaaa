@@ -25,12 +25,14 @@ interface BarChartComponentProps {
   title?: string 
   description?: string 
   data?: { [key: string]: string | number }[] 
+  timePeriod?: "Month" | "Week" | "Year" | "Day" // New prop for time period
 }
 
 export const BarChartComponent = ({
   title = "Bar Chart",
   description = "January - June 2024",
-  data = chartData
+  data = chartData,
+  timePeriod = "Month", // Default to "Month"
 }: BarChartComponentProps) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
 
@@ -51,11 +53,14 @@ export const BarChartComponent = ({
   const percentageChange = activeIndex !== null && activeIndex > 0 ? calculatePercentageChange(activeIndex) : 0
   const isTrendingUp = percentageChange >= 0
 
+  // Dynamically change description based on time period
+  const dynamicDescription = `${timePeriod} - ${description}`
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
+        <CardDescription>{dynamicDescription}</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -83,13 +88,13 @@ export const BarChartComponent = ({
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">
           {isTrendingUp ? (
-            <>Trending up by {percentageChange.toFixed(2)}% this month <TrendingUp className="h-4 w-4" /></>
+            <>Trending up by {percentageChange.toFixed(2)}% this {timePeriod.toLowerCase()} <TrendingUp className="h-4 w-4" /></>
           ) : (
-            <>Trending down by {Math.abs(percentageChange).toFixed(2)}% this month <TrendingDown className="h-4 w-4" /></>
+            <>Trending down by {Math.abs(percentageChange).toFixed(2)}% this {timePeriod.toLowerCase()} <TrendingDown className="h-4 w-4" /></>
           )}
         </div>
         <div className="leading-none text-muted-foreground">
-          Showing total {dynamicLabel} for the last {dataCount} months
+          Showing total {dynamicLabel} for the last {dataCount} {timePeriod.toLowerCase()}s
         </div>
       </CardFooter>
     </Card>
