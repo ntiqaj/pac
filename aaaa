@@ -21,8 +21,7 @@ const chartData = [
   { month: "March", desktop: 237 },
   { month: "April", desktop: 73 },
   { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
-]
+  { month: "June", desktop: 214 }]
 
 const chartConfig = {
   default: {
@@ -34,8 +33,7 @@ const chartConfig = {
 interface BarChartComponentProps {
   title?: string
   description?: string
-  data?: { [key: string]: string | number }[]
-}
+  data?: { [key: string]: string | number }[]}
 
 export const BarChartComponent = ({
   title = "Bar Chart",
@@ -54,8 +52,7 @@ export const BarChartComponent = ({
     const currentValue = Number(data[currentIndex]?.[dataKey]) || 0
     const previousValue = Number(data[currentIndex - 1]?.[dataKey]) || 0
     if (previousValue === 0) return 0
-    return ((currentValue - previousValue) / previousValue) * 100
-  }
+    return ((currentValue - previousValue) / previousValue) * 100}
 
   const percentageChange = activeIndex !== null && activeIndex > 0 ? calculatePercentageChange(activeIndex) : 0
   const isTrendingUp = percentageChange >= 0
@@ -69,11 +66,9 @@ export const BarChartComponent = ({
     const descriptionParts = []
 
     if (startTime && endTime) {
-      descriptionParts.push(`${startTime} - ${endTime} 2024`)
-    }
+      descriptionParts.push(`${startTime} - ${endTime} 2024`)}
 
-    return descriptionParts.join(" ")
-  }
+    return descriptionParts.join(" ")}
 
   const dynamicDescription = determineTimePeriod(data)
 
@@ -86,8 +81,7 @@ export const BarChartComponent = ({
       return "year(s)"
     }
 
-    return "period(s)"
-  }
+    return "period(s)"}
 
   const periodType = getPeriodType()
 
@@ -129,6 +123,4 @@ export const BarChartComponent = ({
           Showing total {dynamicLabel} for the last {dataCount} {periodType}
         </div>
       </CardFooter>
-    </Card>
-  )
-}
+    </Card>)}
