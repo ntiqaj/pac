@@ -71,3 +71,13 @@ export const BarChartComponent = ({
     </Card>
   )
 }
+ const previousValue = data[data.length - 2].desktop; // Last month's value
+  const currentValue = data[data.length - 1].desktop; // Current month's value
+  
+  const percentageChange = ((currentValue - previousValue) / previousValue) * 100;
+  return percentageChange;
+}
+
+// Calculate the percentage change based on the data
+const percentageChange = calculatePercentageChange(chartData);
+
