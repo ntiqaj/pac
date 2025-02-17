@@ -7,12 +7,12 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
 
 const chartData = [
-  {week: "January", desktop: 16 },
-  { week: "February", desktop: 305 },
-  { week: "March", desktop: 237 },
-  { week: "April", desktop: 73 },
-  { week: "May", desktop: 209 },
-  { week: "June", desktop: 214 }
+  { day: "Monday", pen: 16 },
+  { day: "Tuesday", pen: 305 },
+  { day: "Wednesday", pen: 237 },
+  { day: "Thursday", pen: 73 },
+  { day: "Friday", pen: 209 },
+  { day: "Saturday", pen: 214 }
 ]
 
 const chartConfig = {
@@ -23,9 +23,9 @@ const chartConfig = {
 } satisfies ChartConfig
 
 interface BarChartComponentProps {
-  title?: string 
-  description?: string 
-  data?: { [key: string]: string | number }[] 
+  title?: string
+  description?: string
+  data?: { [key: string]: string | number }[]
 }
 
 export const BarChartComponent = ({
@@ -35,8 +35,8 @@ export const BarChartComponent = ({
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
 
   const keys = data.length > 0 ? Object.keys(data[0]) : []
-  const nameKey = keys[0] 
-  const dataKey = keys[1] 
+  const nameKey = keys[0]
+  const dataKey = keys[1]
   const dynamicLabel = dataKey ? dataKey.toLowerCase() : "data"
   const dataCount = data.length
 
@@ -68,13 +68,16 @@ export const BarChartComponent = ({
 
   const dynamicDescription = determineTimePeriod(data)
 
-
   const getPeriodType = () => {
-    if (data.length > 0 && nameKey === "month") {
+    if (data.length > 0 && nameKey === "day") {
+      return "day(s)"
+    } else if (data.length > 0 && nameKey === "month") {
       return "month(s)"
+    } else if (data.length > 0 && nameKey === "year") {
+      return "year(s)"
     }
 
-    return "period(s)" 
+    return "period(s)"
   }
 
   const periodType = getPeriodType()
@@ -99,7 +102,7 @@ export const BarChartComponent = ({
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => String(value).slice(0, 3)}/>
+              tickFormatter={(value) => String(value).slice(0, 3)} />
             <Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
             <Bar dataKey={dataKey} fill="#C4B5FD" radius={8} />
           </BarChart>
