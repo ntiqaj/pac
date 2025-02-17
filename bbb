@@ -1,45 +1,38 @@
 "use client"
-
 import { useState } from "react"
 import { TrendingUp, TrendingDown } from "lucide-react"
-import { Line, LineChart, CartesianGrid, XAxis, Tooltip } from "recharts" // Changed BarChart import to LineChart
+import { Pie, PieChart } from "recharts"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
+import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 
-const chartData = [
-  { day: "Monday", pen: 16 },
-  { day: "Tuesday", pen: 305 },
-  { day: "Wednesday", pen: 237 },
-  { day: "Thursday", pen: 73 },
-  { day: "Friday", pen: 209 },
-  { day: "Saturday", pen: 214 }
-]
-
-const chartConfig = {
-  default: {
-    label: "Value",
-    color: "hsl(var(--chart-1))"
-  }
-} satisfies ChartConfig
-
-interface LineChartComponentProps { // Changed from BarChartComponentProps to LineChartComponentProps
+// Define the interface for the data
+interface PieChartComponentProps {
   title?: string
   description?: string
   data?: { [key: string]: string | number }[]
 }
 
-export const LineChartComponent = ({ // Changed BarChartComponent to LineChartComponent
-  title = "Line Chart", // Updated the title to Line Chart
-  data = chartData
-}: LineChartComponentProps) => { // Changed from BarChartComponentProps to LineChartComponentProps
+export const PieChartComponent = ({
+  title = "Pie Chart",
+  data = [
+    { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
+    { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
+    { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
+    { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
+    { browser: "other", visitors: 90, fill: "var(--color-other)" },
+  ],
+}: PieChartComponentProps) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
 
+  // Dynamically extract the keys from the data
   const keys = data.length > 0 ? Object.keys(data[0]) : []
-  const nameKey = keys[0]
-  const dataKey = keys[1]
+  const nameKey = keys.length > 0 ? keys[0] : "name"  // First key is the nameKey (e.g., 'browser')
+  const dataKey = keys.length > 1 ? keys[1] : "value"  // Second key is the dataKey (e.g., 'visitors')
+
   const dynamicLabel = dataKey ? dataKey.toLowerCase() : "data"
   const dataCount = data.length
 
+  // Function to calculate percentage change
   const calculatePercentageChange = (currentIndex: number) => {
     if (currentIndex <= 0 || currentIndex >= data.length) return 0
     const currentValue = Number(data[currentIndex]?.[dataKey]) || 0
@@ -58,7 +51,6 @@ export const LineChartComponent = ({ // Changed BarChartComponent to LineChartCo
     const startTime = firstItem[nameKey] as string
     const endTime = lastItem[nameKey] as string
     const descriptionParts = []
-
     if (startTime && endTime) {
       descriptionParts.push(`${startTime} - ${endTime} 2024`)
     }
@@ -68,53 +60,46 @@ export const LineChartComponent = ({ // Changed BarChartComponent to LineChartCo
 
   const dynamicDescription = determineTimePeriod(data)
 
-  const getPeriodType = () => {
-    if (data.length > 0 && nameKey === "day") {
-      return "day(s)"
-    } else if (data.length > 0 && nameKey === "month") {
-      return "month(s)"
-    } else if (data.length > 0 && nameKey === "year") {
-      return "year(s)"
-    }
+  // Dynamically create chartConfig
+  const generateChartConfig = (data: { [key: string]: string | number }[]): { [key: string]: { label: string, color: string } } => {
+    const config: { [key: string]: { label: string, color: string } } = {}
 
-    return "period(s)"
+    data.forEach((item) => {
+      const label = item[nameKey] as string
+      const color = item["fill"] || "hsl(var(--chart-1))" // Default to color if 'fill' is not defined
+      config[label] = { label, color }
+    })
+
+    return config
   }
 
-  const periodType = getPeriodType()
+  // Generate the dynamic config
+  const chartConfig = generateChartConfig(data)
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="flex flex-col">
+      <CardHeader className="items-center pb-0">
         <CardTitle>{title}</CardTitle>
         <CardDescription>{dynamicDescription}</CardDescription>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
-          <LineChart // Changed BarChart to LineChart
-            accessibilityLayer
-            data={data}
+      <CardContent className="flex-1 pb-0">
+        <ChartContainer
+          config={chartConfig}
+          className="mx-auto aspect-square max-h-[250px]"
+        >
+          <PieChart
             onMouseMove={(state) => {
-              setActiveIndex(state?.activeTooltipIndex ?? null)}}
-            onMouseLeave={() => setActiveIndex(null)}>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey={nameKey}
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) => String(value).slice(0, 3)} />
-            <Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <Line // Changed Bar to Line for the line chart component
-              dataKey={dataKey} 
-              stroke="hsl(var(--chart-1))" // Updated fill to stroke for line chart
-              strokeWidth={2} // Added strokeWidth for the line
-              dot={false} // Added dot={false} to remove dots on the line
-            />
-          </LineChart>
+              setActiveIndex(state?.activeTooltipIndex ?? null)
+            }}
+            onMouseLeave={() => setActiveIndex(null)}
+          >
+            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+            <Pie data={data} dataKey={dataKey} nameKey={nameKey} />
+          </PieChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
+      <CardFooter className="flex-col gap-2 text-sm">
+        <div className="flex items-center gap-2 font-medium leading-none">
           {isTrendingUp ? (
             <>Trending up by {percentageChange.toFixed(2)}% this period <TrendingUp className="h-4 w-4" /></>
           ) : (
@@ -122,7 +107,7 @@ export const LineChartComponent = ({ // Changed BarChartComponent to LineChartCo
           )}
         </div>
         <div className="leading-none text-muted-foreground">
-          Showing total {dynamicLabel} for the last {dataCount} {periodType}
+          Showing total {dynamicLabel} for the last {dataCount} periods
         </div>
       </CardFooter>
     </Card>
