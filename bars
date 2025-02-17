@@ -60,8 +60,8 @@ export const PieChartComponent = ({
   const dynamicDescription = determineTimePeriod(data)
 
   // Dynamically create chartConfig based on the data
-  const generateChartConfig = (data: { [key: string]: string | number }[]) => {
-    const config: { [key: string]: { label: string, color: string } } = {}  // Declare config type
+  const generateChartConfig = (data: { [key: string]: string | number }[]): Record<string, { label: string, color: string }> => {
+    const config: Record<string, { label: string, color: string }> = {}  // Define the type here
     data.forEach((item) => {
       const label = item[nameKey] as string
       const color = item["fill"] || "hsl(var(--chart-1))" // Use `fill` or default to a color variable
