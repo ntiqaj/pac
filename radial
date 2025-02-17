@@ -92,3 +92,15 @@ type Story = StoryObj<typeof RadialChartComponent>;
 export const Default: Story = {
   render: () => <RadialChartComponent dataKey="visitors" nameKey="browser" />,
 };
+
+
+Error: Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+  at createFiberFromElement (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:13414:14))
+  at reconcileChildFibersImpl (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:7046:31))
+  at /vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:7223:33
+  at reconcileChildren (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:7786:13))
+  at updateFunctionComponent (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:8083:7))
+  at beginWork (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:9723:18))
+  at runWithFiberInDEV (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:578:16))
+  at performUnitOfWork (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:15098:22))
+  at workLoopSync (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:14922:41))
