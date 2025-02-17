@@ -31,20 +31,24 @@ const BarChartComponent = ({ dataKey1 = "running", dataKey2 = "swimming" }) => (
           <XAxis dataKey="date" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => new Date(value).toLocaleDateString("en-US", { weekday: "short" })} />
           <Bar dataKey={dataKey1} stackId="a" fill={`hsl(var(--chart-1))`} radius={[0, 0, 4, 4]} />
           <Bar dataKey={dataKey2} stackId="a" fill={`hsl(var(--chart-2))`} radius={[4, 4, 0, 0]} />
-          <ChartTooltip content={<ChartTooltipContent hideLabel className="w-[180px]" formatter={(value, name, item, index) => (
-            <div className="flex items-center gap-2">
-              <div className="h-2.5 w-2.5 shrink-0 rounded-[2px] bg-current" style={{ backgroundColor: chartConfig[name]?.color || "hsl(var(--muted))" }} />
-              {chartConfig[name]?.label ?? name}
-              <div className="ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground">{value}
-                <span className="font-normal text-muted-foreground">kcal</span>
-              </div>
-              {index === 1 && (
-                <div className="mt-1.5 flex basis-full items-center border-t pt-1.5 text-xs font-medium text-foreground">
-                  Total
-                  <div className="ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground">{(item.payload[dataKey1] || 0) + (item.payload[dataKey2] || 0)}<span className="font-normal text-muted-foreground">kcal</span></div>
+          <ChartTooltip content={<ChartTooltipContent hideLabel className="w-[180px]" formatter={(value, name, item, index) => {
+            const configItem = chartConfig[name];
+            return (
+              <div className="flex items-center gap-2">
+                <div className="h-2.5 w-2.5 shrink-0 rounded-[2px] bg-current" style={{ backgroundColor: configItem?.color || "hsl(var(--muted))" }} />
+                {configItem?.label || name}
+                <div className="ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground">{value}
+                  <span className="font-normal text-muted-foreground">kcal</span>
                 </div>
-              )}
-            </div>)} />} cursor={false} defaultIndex={1} />
+                {index === 1 && (
+                  <div className="mt-1.5 flex basis-full items-center border-t pt-1.5 text-xs font-medium text-foreground">
+                    Total
+                    <div className="ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground">{(item.payload[dataKey1] || 0) + (item.payload[dataKey2] || 0)}<span className="font-normal text-muted-foreground">kcal</span></div>
+                  </div>
+                )}
+              </div>
+            );
+          }} />} cursor={false} defaultIndex={1} />
         </BarChart>
       </ChartContainer>
     </CardContent>
