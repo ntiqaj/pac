@@ -38,20 +38,20 @@ export const BarChartComponent = ({
   const dynamicLabel = dataKey ? dataKey.toLowerCase() : "data"
   const dataCount = data.length
 
-  const calculatePercentageChange = (chartData: { [key: string]: number }[]) => {
-    if (chartData.length < 2) return 0;
-    const keys = Object.keys(chartData[0]).filter(key => key !== nameKey);
+  const calculatePercentageChange = (inputData: { [key: string]: number }[]) => {
+    if (inputData.length < 2) return 0;
+    const keys = Object.keys(inputData[0]).filter(key => key !== nameKey);
     if (keys.length === 0) return 0;
 
     const valueKey = keys[0]
-    const previousValue = chartData[chartData.length - 2][valueKey]
-    const currentValue = chartData[chartData.length - 1][valueKey]
+    const previousValue = inputData[inputData.length - 2][valueKey]
+    const currentValue = inputData[inputData.length - 1][valueKey]
 
     const percentageChange = ((currentValue - previousValue) / previousValue) * 100;
     return percentageChange;
   }
 
-  const percentageChange = calculatePercentageChange(data || chartData);
+  const percentageChange = calculatePercentageChange(data);
 
   return (
     <Card>
