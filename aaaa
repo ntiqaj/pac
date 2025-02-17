@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react" // Import useState for tracking active index
+import { useState } from "react"
 import { TrendingUp } from "lucide-react"
 import { Bar, BarChart, CartesianGrid, XAxis, Tooltip } from "recharts"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -40,19 +40,15 @@ export const BarChartComponent = ({
   const dynamicLabel = dataKey ? dataKey.toLowerCase() : "data"
   const dataCount = data.length
 
-  const calculatePercentageChange = (index: number) => {
-    if (index === 0 || index >= data.length) return 0
-
-    const currentValue = parseFloat(String(data[index][dataKey])) || 0
-    const previousValue = parseFloat(String(data[index - 1][dataKey])) || 0
-
+  const calculatePercentageChange = (currentIndex: number) => {
+    if (currentIndex <= 0 || currentIndex >= data.length) return 0
+    const currentValue = parseFloat(data[currentIndex]?.[dataKey] as string) || 0
+    const previousValue = parseFloat(data[currentIndex - 1]?.[dataKey] as string) || 0
     if (previousValue === 0) return 0
-
-    const percentageChange = ((currentValue - previousValue) / previousValue) * 100
-    return percentageChange
+    return ((currentValue - previousValue) / previousValue) * 100
   }
 
-  const percentageChange = activeIndex !== null ? calculatePercentageChange(activeIndex) : 0
+  const percentageChange = activeIndex !== null && activeIndex > 0 ? calculatePercentageChange(activeIndex) : 0
 
   return (
     <Card>
@@ -66,11 +62,7 @@ export const BarChartComponent = ({
             accessibilityLayer
             data={data}
             onMouseMove={(state) => {
-              if (state?.isTooltipActive) {
-                setActiveIndex(state.activeTooltipIndex ?? null)
-              } else {
-                setActiveIndex(null)
-              }
+              setActiveIndex(state?.activeTooltipIndex ?? null)
             }}
             onMouseLeave={() => setActiveIndex(null)}
           >
@@ -82,17 +74,14 @@ export const BarChartComponent = ({
               axisLine={false}
               tickFormatter={(value) => value.slice(0, 3)} 
             />
-            <Tooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
+            <Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
             <Bar dataKey={dataKey} fill="#C4B5FD" radius={8} />
           </BarChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">
-          Trending up by {percentageChange.toFixed(2)}% this month <TrendingUp className="h-4 w-4" />
+          Trending up by {activeIndex !== null && activeIndex > 0 ? percentageChange.toFixed(2) : 0}% this month <TrendingUp className="h-4 w-4" />
         </div>
         <div className="leading-none text-muted-foreground">
           Showing total {dynamicLabel} for the last {dataCount} months
