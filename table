@@ -32,7 +32,7 @@ const InvoiceTable = () => {
             {data.map((row) => (
               <TableRow key={row.id}>
                 {columns.map((col) => (
-                  <TableCell key={col} className={col === 'Amount' ? 'text-right' : ''}>{row[col]}</TableCell>
+                  <TableCell key={col} className={col === 'Amount' ? 'text-right' : ''}>{row[col as keyof typeof row]}</TableCell>
                 ))}
               </TableRow>
             ))}
