@@ -2,47 +2,63 @@
 
 import { useState } from "react"
 import { TrendingUp, TrendingDown } from "lucide-react"
-import { Bar, BarChart, CartesianGrid, XAxis, Tooltip } from "recharts"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
+import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart"
 
 // Sample data
 const chartData = [
-  { month: "January", machine: 10 },
-  { month: "February", machine: 20 },
-  { month: "March", machine: 40 },
-  { month: "April", machine: 50 },
-  { month: "May", machine: 30 },
+  { month: "January", desktop: 186, mobile: 80 },
+  { month: "February", desktop: 305, mobile: 200 },
+  { month: "March", desktop: 237, mobile: 120 },
+  { month: "April", desktop: 73, mobile: 190 },
+  { month: "May", desktop: 209, mobile: 130 },
+  { month: "June", desktop: 214, mobile: 140 },
 ]
 
 const chartConfig = {
-  default: {
-    label: "Value",
-    color: "hsl(var(--chart-1))"
-  }
+  desktop: { label: "Desktop", color: "hsl(var(--chart-1))" },
+  mobile: { label: "Mobile", color: "hsl(var(--chart-2))" },
 } satisfies ChartConfig
 
-interface BarChartComponentProps {
+interface AreaChartComponentProps {
+  dataKey1?: string 
+  dataKey2?: string 
   title?: string 
   description?: string 
   data?: { [key: string]: string | number }[] 
 }
 
-export const BarChartComponent = ({
-  title = "Bar Chart",
-  description = "January - May 2024",
-  data = chartData
-}: BarChartComponentProps) => {
+export const AreaChartComponent = ({
+  dataKey1 = "mobile", 
+  dataKey2 = "desktop", 
+  title = "Area Chart - Stacked",
+  description = "Showing total visitors for the last 6 months",
+  data = chartData,
+}: AreaChartComponentProps) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
 
   const keys = data.length > 0 ? Object.keys(data[0]) : []
-  const nameKey = keys[0] 
-  const dataKey = keys[1] 
-  const dynamicLabel = dataKey ? dataKey.toLowerCase() : "data"
-  const dataCount = data.length
-
+  const nameKey = "month"
+  
+  // Dynamically infer the data keys
+  const inferredDataKey1 = keys.find(key => key !== nameKey) || dataKey1
+  const inferredDataKey2 = keys.filter(key => key !== nameKey)[1] || dataKey2
+  
   // Function to calculate percentage change
-  const calculatePercentageChange = (currentIndex: number) => {
+  const calculatePercentageChange = (currentIndex: number, dataKey: string) => {
     if (currentIndex <= 0 || currentIndex >= data.length) return 0
     const currentValue = Number(data[currentIndex]?.[dataKey]) || 0
     const previousValue = Number(data[currentIndex - 1]?.[dataKey]) || 0
@@ -50,8 +66,8 @@ export const BarChartComponent = ({
     return ((currentValue - previousValue) / previousValue) * 100
   }
 
-  const percentageChange = activeIndex !== null && activeIndex > 0 ? calculatePercentageChange(activeIndex) : 0
-  const isTrendingUp = percentageChange >= 0
+  const percentageChange1 = activeIndex !== null && activeIndex > 0 ? calculatePercentageChange(activeIndex, inferredDataKey1) : 0
+  const isTrendingUp1 = percentageChange1 >= 0
 
   // Dynamically determine the time period and format the description
   const determineTimePeriod = (data: { [key: string]: string | number }[]) => {
@@ -61,7 +77,6 @@ export const BarChartComponent = ({
     const startTime = firstItem[nameKey] as string
     const endTime = lastItem[nameKey] as string
 
-    // Generate dynamic description based on time period (Month, Week, Day, etc.)
     const descriptionParts = []
     if (startTime && endTime) {
       descriptionParts.push(`${startTime} - ${endTime} 2024`)
@@ -80,37 +95,49 @@ export const BarChartComponent = ({
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <BarChart
-            accessibilityLayer
-            data={data}
-            onMouseMove={(state) => {
-              setActiveIndex(state?.activeTooltipIndex ?? null)
-            }}
-            onMouseLeave={() => setActiveIndex(null)}
-          >
+          <AreaChart data={data} margin={{ left: 12, right: 12 }}>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey={nameKey}
               tickLine={false}
-              tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => String(value).slice(0, 3)}
+              tickMargin={8}
+              tickFormatter={(value) => value.slice(0, 3)}
             />
-            <Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <Bar dataKey={dataKey} fill="#C4B5FD" radius={8} />
-          </BarChart>
+            <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
+            <Area
+              dataKey={inferredDataKey1}
+              type="natural"
+              fill="#93C5FD" 
+              fillOpacity={0.4}
+              stroke="#93C5FD" 
+              stackId="a"
+            />
+            <Area
+              dataKey={inferredDataKey2}
+              type="natural"
+              fill="#6EE7B7" 
+              fillOpacity={0.4}
+              stroke="#6EE7B7" 
+              stackId="a"
+            />
+          </AreaChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
-          {isTrendingUp ? (
-            <>Trending up by {percentageChange.toFixed(2)}% this period <TrendingUp className="h-4 w-4" /></>
-          ) : (
-            <>Trending down by {Math.abs(percentageChange).toFixed(2)}% this period <TrendingDown className="h-4 w-4" /></>
-          )}
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total {dynamicLabel} for the last {dataCount} periods
+      <CardFooter>
+        <div className="flex w-full items-start gap-2 text-sm">
+          <div className="grid gap-2">
+            <div className="flex items-center gap-2 font-medium leading-none">
+              {isTrendingUp1 ? (
+                <>Trending up by {percentageChange1.toFixed(2)}% this period <TrendingUp className="h-4 w-4" /></>
+              ) : (
+                <>Trending down by {Math.abs(percentageChange1).toFixed(2)}% this period <TrendingDown className="h-4 w-4" /></>
+              )}
+            </div>
+            <div className="flex items-center gap-2 leading-none text-muted-foreground">
+              {dynamicDescription}
+            </div>
+          </div>
         </div>
       </CardFooter>
     </Card>
