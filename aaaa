@@ -6,6 +6,7 @@ import { Bar, BarChart, CartesianGrid, XAxis, Tooltip } from "recharts"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
 
+// Sample data
 const chartData = [
   { month: "January", machine: 10 },
   { month: "February", machine: 20 },
@@ -25,14 +26,12 @@ interface BarChartComponentProps {
   title?: string 
   description?: string 
   data?: { [key: string]: string | number }[] 
-  timePeriod?: "Month" | "Week" | "Year" | "Day" // New prop for time period
 }
 
 export const BarChartComponent = ({
   title = "Bar Chart",
   description = "January - June 2024",
-  data = chartData,
-  timePeriod = "Month", // Default to "Month"
+  data = chartData
 }: BarChartComponentProps) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
 
@@ -42,6 +41,7 @@ export const BarChartComponent = ({
   const dynamicLabel = dataKey ? dataKey.toLowerCase() : "data"
   const dataCount = data.length
 
+  // Function to calculate percentage change
   const calculatePercentageChange = (currentIndex: number) => {
     if (currentIndex <= 0 || currentIndex >= data.length) return 0
     const currentValue = Number(data[currentIndex]?.[dataKey]) || 0
@@ -53,8 +53,27 @@ export const BarChartComponent = ({
   const percentageChange = activeIndex !== null && activeIndex > 0 ? calculatePercentageChange(activeIndex) : 0
   const isTrendingUp = percentageChange >= 0
 
-  // Dynamically change description based on time period
-  const dynamicDescription = `${timePeriod} - ${description}`
+  // Dynamically determine the time period and format the description
+  const determineTimePeriod = (data: { [key: string]: string | number }[]) => {
+    const firstItem = data[0]
+    const lastItem = data[data.length - 1]
+
+    const startTime = firstItem[nameKey] as string
+    const endTime = lastItem[nameKey] as string
+
+    // Check if it's "Month", "Week", or "Day"
+    if (startTime.toLowerCase().includes("january")) {
+      return `January - June 2024` // Example logic for Month
+    } else if (startTime.toLowerCase().includes("week")) {
+      return `Week 1 - Week ${data.length}, 2024`
+    } else if (startTime.toLowerCase().includes("day")) {
+      return `Day 1 - Day ${data.length}, 2024`
+    } else {
+      return `${startTime} - ${endTime} 2024`
+    }
+  }
+
+  const dynamicDescription = determineTimePeriod(data)
 
   return (
     <Card>
@@ -88,13 +107,13 @@ export const BarChartComponent = ({
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">
           {isTrendingUp ? (
-            <>Trending up by {percentageChange.toFixed(2)}% this {timePeriod.toLowerCase()} <TrendingUp className="h-4 w-4" /></>
+            <>Trending up by {percentageChange.toFixed(2)}% this period <TrendingUp className="h-4 w-4" /></>
           ) : (
-            <>Trending down by {Math.abs(percentageChange).toFixed(2)}% this {timePeriod.toLowerCase()} <TrendingDown className="h-4 w-4" /></>
+            <>Trending down by {Math.abs(percentageChange).toFixed(2)}% this period <TrendingDown className="h-4 w-4" /></>
           )}
         </div>
         <div className="leading-none text-muted-foreground">
-          Showing total {dynamicLabel} for the last {dataCount} {timePeriod.toLowerCase()}s
+          Showing total {dynamicLabel} for the last {dataCount} periods
         </div>
       </CardFooter>
     </Card>
