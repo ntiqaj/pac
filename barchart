@@ -59,3 +59,77 @@ export const BarChartComponent = ({ dataKey = "machine", nameKey = "month" }) =>
     </CardFooter>
   </Card>
 )
+"use client"
+
+import { TrendingUp } from "lucide-react"
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+
+// Example dynamic chartData
+const chartData = [
+  { month: "January", machine: 10, sales: 50 },
+  { month: "February", machine: 20, sales: 55 },
+  { month: "March", machine: 40, sales: 60 },
+  { month: "April", machine: 50, sales: 65 },
+  { month: "May", machine: 60, sales: 70 },
+  { month: "June", machine: 70, sales: 75 },
+]
+
+// Dynamically generate chartConfig based on chartData fields
+const generateChartConfig = (data: any) => {
+  // Get the first data entry to find all keys (columns) dynamically
+  const firstEntry = data[0];
+  const config: ChartConfig = {};
+
+  // For each key in the first data entry, create a default configuration if not already present
+  Object.keys(firstEntry).forEach(key => {
+    if (key !== 'month') { // Don't include 'month' as it is the X-axis category
+      config[key] = {
+        label: key.charAt(0).toUpperCase() + key.slice(1),  // Capitalize the key name for label
+        color: `hsl(var(--chart-${Object.keys(config).length + 1}))`, // Generate color based on index
+      }
+    }
+  });
+
+  return config;
+}
+
+// Dynamic chartConfig based on chartData
+const chartConfig = generateChartConfig(chartData);
+
+export const BarChartComponent = ({ dataKey = "machine", nameKey = "month" }) => (
+  <Card>
+    <CardHeader>
+      <CardTitle>Bar Chart</CardTitle>
+      <CardDescription>January - June 2024</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <ChartContainer config={chartConfig}>
+        <BarChart accessibilityLayer data={chartData}>
+          <CartesianGrid vertical={false} />
+          <XAxis
+            dataKey={nameKey} // Use dynamic 'nameKey' (e.g., month)
+            tickLine={false}
+            tickMargin={10}
+            axisLine={false}
+            tickFormatter={(value) => value.slice(0, 3)} // Month formatting
+          />
+          <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+          
+          {/* Use dynamic dataKey for Bar */}
+          <Bar dataKey={dataKey} fill={chartConfig[dataKey]?.color || "var(--muted)"} radius={8} />
+        </BarChart>
+      </ChartContainer>
+    </CardContent>
+    <CardFooter className="flex-col items-start gap-2 text-sm">
+      <div className="flex gap-2 font-medium leading-none">
+        Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+      </div>
+      <div className="leading-none text-muted-foreground">
+        Showing total data for the last 6 months
+      </div>
+    </CardFooter>
+  </Card>
+)
+
