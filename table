@@ -50,3 +50,56 @@ const InvoiceTable = () => {
 };
 
 export default InvoiceTable;
+
+"use client";
+
+import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+
+const data = [
+  { id: 1, "Status": "●", "Client & Vendor Name": "IPC_3426", "Last Updated Time": "2/13/2025 2:00:38 AM", "Connected Time": "0 Hrs 0 min", "Data Usage": "28.35MB", "Band Usage": "5G", "Signal Strength": "-64 (Good)", "Avg Signal (24 hrs)": "-62.90", "Link Rate (Mbps)": "6 (Poor)", "IP Address": "192.168.1.2", "Channel No": "36", "Retransmission": "0" },
+  { id: 2, "Status": "●", "Client & Vendor Name": "IPC_4417", "Last Updated Time": "2/13/2025 2:00:26 AM", "Connected Time": "0 Hrs 0 min", "Data Usage": "28.22MB", "Band Usage": "5G", "Signal Strength": "-65 (Good)", "Avg Signal (24 hrs)": "-66.79", "Link Rate (Mbps)": "287 (Fair)", "IP Address": "192.168.1.4", "Channel No": "36", "Retransmission": "0" },
+];
+
+const InvoiceTable = () => {
+  const columns = Object.keys(data[0]).filter(key => key !== 'id');
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-3xl font-extrabold">Client & Vendor Data</CardTitle>
+        <CardDescription>Overview of connected clients and usage data.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableCaption>Client and vendor connectivity data.</TableCaption>
+          <TableHeader className="bg-black text-white text-xl font-extrabold">
+            <TableRow>
+              {columns.map((col) => (
+                <TableHead key={col} className="text-white px-4 py-2 border-b border-gray-300">{col}</TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data.map((row, rowIndex) => (
+              <TableRow key={row.id} className={rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-200'}>
+                {columns.map((col) => (
+                  <TableCell key={col} className="px-4 py-2 border-b border-gray-300 text-gray-800">{row[col as keyof typeof row]}</TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+          <TableFooter className="bg-gray-200 border-t border-gray-300">
+            <TableRow>
+              <TableCell colSpan={columns.length - 1}>Total</TableCell>
+              <TableCell className="text-right font-bold">-</TableCell>
+            </TableRow>
+          </TableFooter>
+        </Table>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default InvoiceTable;
+
