@@ -1,41 +1,33 @@
 "use client"
-
 import { useState } from "react"
 import { TrendingUp, TrendingDown } from "lucide-react"
-import { Bar, BarChart, CartesianGrid, XAxis, Tooltip } from "recharts"
+import { Pie, PieChart } from "recharts"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
+import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 
-const chartData = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 }]
-
-const chartConfig = {
-  default: {
-    label: "Value",
-    color: "hsl(var(--chart-1))"
-  }
-} satisfies ChartConfig
-
-interface BarChartComponentProps {
-  title?: string 
-  description?: string 
-  data?: { [key: string]: string | number }[] 
+interface PieChartComponentProps {
+  title?: string
+  description?: string
+  data?: { [key: string]: string | number }[]
+  dataKey?: string
+  nameKey?: string
 }
 
-export const BarChartComponent = ({
-  title = "Bar Chart",
-  data = chartData
-}: BarChartComponentProps) => {
+export const PieChartComponent = ({
+  title = "Pie Chart",
+  data = [
+    { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
+    { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
+    { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
+    { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
+    { browser: "other", visitors: 90, fill: "var(--color-other)" },
+  ],
+  dataKey = "visitors",
+  nameKey = "browser",
+}: PieChartComponentProps) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
 
   const keys = data.length > 0 ? Object.keys(data[0]) : []
-  const nameKey = keys[0] 
-  const dataKey = keys[1] 
   const dynamicLabel = dataKey ? dataKey.toLowerCase() : "data"
   const dataCount = data.length
 
@@ -50,6 +42,7 @@ export const BarChartComponent = ({
 
   const percentageChange = activeIndex !== null && activeIndex > 0 ? calculatePercentageChange(activeIndex) : 0
   const isTrendingUp = percentageChange >= 0
+
   const determineTimePeriod = (data: { [key: string]: string | number }[]) => {
     const firstItem = data[0]
     const lastItem = data[data.length - 1]
@@ -66,34 +59,37 @@ export const BarChartComponent = ({
 
   const dynamicDescription = determineTimePeriod(data)
 
+  const chartConfig = {
+    default: {
+      label: "Value",
+      color: "hsl(var(--chart-1))"
+    }
+  } satisfies ChartConfig
+
   return (
-    <Card>
-      <CardHeader>
+    <Card className="flex flex-col">
+      <CardHeader className="items-center pb-0">
         <CardTitle>{title}</CardTitle>
         <CardDescription>{dynamicDescription}</CardDescription>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
-          <BarChart
-            accessibilityLayer
-            data={data}
+      <CardContent className="flex-1 pb-0">
+        <ChartContainer
+          config={chartConfig}
+          className="mx-auto aspect-square max-h-[250px]"
+        >
+          <PieChart
             onMouseMove={(state) => {
-              setActiveIndex(state?.activeTooltipIndex ?? null)}}
-            onMouseLeave={() => setActiveIndex(null)}>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey={nameKey}
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) => String(value).slice(0, 3)}/>
-            <Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <Bar dataKey={dataKey} fill="#C4B5FD" radius={8} />
-          </BarChart>
+              setActiveIndex(state?.activeTooltipIndex ?? null)
+            }}
+            onMouseLeave={() => setActiveIndex(null)}
+          >
+            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+            <Pie data={data} dataKey={dataKey} nameKey={nameKey} />
+          </PieChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
+      <CardFooter className="flex-col gap-2 text-sm">
+        <div className="flex items-center gap-2 font-medium leading-none">
           {isTrendingUp ? (
             <>Trending up by {percentageChange.toFixed(2)}% this period <TrendingUp className="h-4 w-4" /></>
           ) : (
