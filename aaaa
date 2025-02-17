@@ -30,7 +30,7 @@ interface BarChartComponentProps {
 
 export const BarChartComponent = ({
   title = "Bar Chart",
-  description = "January - June 2024",
+  description = "January - May 2024",
   data = chartData
 }: BarChartComponentProps) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
@@ -61,16 +61,13 @@ export const BarChartComponent = ({
     const startTime = firstItem[nameKey] as string
     const endTime = lastItem[nameKey] as string
 
-    // Check if it's "Month", "Week", or "Day"
-    if (startTime.toLowerCase().includes("january")) {
-      return `January - June 2024` // Example logic for Month
-    } else if (startTime.toLowerCase().includes("week")) {
-      return `Week 1 - Week ${data.length}, 2024`
-    } else if (startTime.toLowerCase().includes("day")) {
-      return `Day 1 - Day ${data.length}, 2024`
-    } else {
-      return `${startTime} - ${endTime} 2024`
+    // Generate dynamic description based on time period (Month, Week, Day, etc.)
+    const descriptionParts = []
+    if (startTime && endTime) {
+      descriptionParts.push(`${startTime} - ${endTime} 2024`)
     }
+
+    return descriptionParts.join(" ")
   }
 
   const dynamicDescription = determineTimePeriod(data)
