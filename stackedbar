@@ -1,0 +1,82 @@
+"use client"
+
+import { useState } from "react"
+import { TrendingUp, TrendingDown } from "lucide-react"
+import { Bar, BarChart, CartesianGrid, XAxis, Tooltip, YAxis } from "recharts"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
+
+const chartData = [
+  { month: "January", desktop: 186, mobile: 120 },
+  { month: "February", desktop: 305, mobile: 150 },
+  { month: "March", desktop: 237, mobile: 180 },
+  { month: "April", desktop: 73, mobile: 90 },
+  { month: "May", desktop: 209, mobile: 160 },
+  { month: "June", desktop: 214, mobile: 170 }
+]
+
+const chartConfig = {
+  default: {
+    label: "Value",
+    color: "hsl(var(--chart-1))"
+  }
+} satisfies ChartConfig
+
+interface BarChartComponentProps {
+  title?: string
+  data?: { [key: string]: string | number }[]
+}
+
+export const BarChartComponent = ({
+  title = "Stacked Bar Chart",
+  data = chartData
+}: BarChartComponentProps) => {
+  const [activeIndex, setActiveIndex] = useState<number | null>(null)
+
+  const keys = data.length > 0 ? Object.keys(data[0]) : []
+  const nameKey = keys[0]
+  const dataKeys = keys.slice(1) // Changed to support multiple data keys for stacked chart
+
+  const determineTimePeriod = (data: { [key: string]: string | number }[]) => {
+    const firstItem = data[0]
+    const lastItem = data[data.length - 1]
+
+    const startTime = firstItem[nameKey] as string
+    const endTime = lastItem[nameKey] as string
+    return `${startTime} - ${endTime} 2024`
+  }
+
+  const dynamicDescription = determineTimePeriod(data)
+  const periodType = nameKey === "day" ? "day(s)" : nameKey === "month" ? "month(s)" : "period(s)"
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{dynamicDescription}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer config={chartConfig}>
+          <BarChart
+            accessibilityLayer
+            data={data}
+            onMouseMove={(state) => setActiveIndex(state?.activeTooltipIndex ?? null)}
+            onMouseLeave={() => setActiveIndex(null)}>
+            <CartesianGrid vertical={false} />
+            <XAxis dataKey={nameKey} tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => String(value).slice(0, 3)} />
+            <YAxis /> {/* Added YAxis for value scale */}
+            <Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+            {dataKeys.map((key, index) => (
+              <Bar key={key} dataKey={key} stackId="a" fill={`hsl(var(--chart-${index + 1}))`} radius={4} />
+            ))} {/* Changed to render multiple Bar components stacked */}
+          </BarChart>
+        </ChartContainer>
+      </CardContent>
+      <CardFooter className="flex-col items-start gap-2 text-sm">
+        <div className="leading-none text-muted-foreground">
+          Showing total data for the last {data.length} {periodType}
+        </div>
+      </CardFooter>
+    </Card>
+  )
+}
