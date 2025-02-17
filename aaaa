@@ -12,7 +12,8 @@ const chartData = [
   { month: "March", desktop: 237 },
   { month: "April", desktop: 73 },
   { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 }]
+  { month: "June", desktop: 214 }
+]
 
 const chartConfig = {
   default: {
@@ -49,6 +50,7 @@ export const BarChartComponent = ({
 
   const percentageChange = activeIndex !== null && activeIndex > 0 ? calculatePercentageChange(activeIndex) : 0
   const isTrendingUp = percentageChange >= 0
+
   const determineTimePeriod = (data: { [key: string]: string | number }[]) => {
     const firstItem = data[0]
     const lastItem = data[data.length - 1]
@@ -56,6 +58,7 @@ export const BarChartComponent = ({
     const startTime = firstItem[nameKey] as string
     const endTime = lastItem[nameKey] as string
     const descriptionParts = []
+
     if (startTime && endTime) {
       descriptionParts.push(`${startTime} - ${endTime} 2024`)
     }
@@ -64,6 +67,20 @@ export const BarChartComponent = ({
   }
 
   const dynamicDescription = determineTimePeriod(data)
+
+  // Function to infer the time period (Month, Week, Year, or Day)
+  const getPeriodType = () => {
+    // If the nameKey represents months, weeks, or years, we will determine it based on the data.
+    if (data.length > 0 && nameKey === "month") {
+      return "month(s)"
+    }
+
+    // Here, you can add more conditions to detect Week, Day, or Year if the data corresponds to those.
+    // For now, it's based on "month", but you can extend this for other periods.
+    return "period(s)"  // Fallback if no match
+  }
+
+  const periodType = getPeriodType()
 
   return (
     <Card>
@@ -100,7 +117,7 @@ export const BarChartComponent = ({
           )}
         </div>
         <div className="leading-none text-muted-foreground">
-          Showing total {dynamicLabel} for the last {dataCount} periods
+          Showing total {dynamicLabel} for the last {dataCount} {periodType}
         </div>
       </CardFooter>
     </Card>
