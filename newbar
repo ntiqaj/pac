@@ -71,13 +71,20 @@ export const BarChartComponent = ({
     </Card>
   )
 }
- const previousValue = data[data.length - 2].desktop; // Last month's value
-  const currentValue = data[data.length - 1].desktop; // Current month's value
-  
+ const calculatePercentageChange = (data: { [key: string]: number }[]) => {
+  if (data.length < 2) return 0;
+
+  // Infer the key for numerical data dynamically (excluding the first key which is usually the label, e.g., month)
+  const keys = Object.keys(data[0]).filter(key => key !== "month");
+  if (keys.length === 0) return 0;
+
+  const valueKey = keys[0]; // Assume the first numerical key is the value key
+  const previousValue = data[data.length - 2][valueKey]; // Last month's value
+  const currentValue = data[data.length - 1][valueKey]; // Current month's value
+
   const percentageChange = ((currentValue - previousValue) / previousValue) * 100;
   return percentageChange;
 }
 
 // Calculate the percentage change based on the data
 const percentageChange = calculatePercentageChange(chartData);
-
