@@ -56,6 +56,13 @@ const LineChartComponent = ({
   const percentageChange = activeIndex !== null && activeIndex > 0 ? calculatePercentageChange(activeIndex) : 0;
   const isTrendingUp = percentageChange >= 0;
 
+  // Determine the time period (month, week, day, etc.)
+  const timePeriod = xAxisKey === "month" ? "months" : xAxisKey === "week" ? "weeks" : xAxisKey === "day" ? "days" : "periods";
+
+  // Determine dynamic label for the y-axis key (e.g., desktop, mobile, etc.)
+  const dynamicLabel = yAxisKey.charAt(0).toUpperCase() + yAxisKey.slice(1);
+
+  // Dynamic description
   const dynamicDescription = `${data[0]?.[xAxisKey]} - ${data[data.length - 1]?.[xAxisKey]} 2024`;
 
   return (
@@ -89,7 +96,7 @@ const LineChartComponent = ({
           )}
         </div>
         <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last {data.length} months
+          Showing total {dynamicLabel} for the last {data.length} {timePeriod}
         </div>
       </CardFooter>
     </Card>
