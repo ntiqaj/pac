@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from "recharts";
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from "recharts";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 
@@ -17,7 +17,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export const BarChartComponent = ({ data = stationEvents }) => {
+export const LineChartComponent = ({ data = stationEvents }) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   const keys = data.length > 0 ? Object.keys(data[0]).filter((key) => key !== "category") : [];
@@ -26,7 +26,7 @@ export const BarChartComponent = ({ data = stationEvents }) => {
     <Card>
       <CardHeader className="relative">
         <CardTitle>Station Events By Category</CardTitle>
-        <CardDescription className="absolute top-0 right-0 p-4 bg-gradient-to-r from-green-500 via-red-500 to-yellow-500 border rounded-lg shadow-md max-w-xs z-10">
+        <CardDescription className="absolute top-0 right-0 p-4 bg-gray-50 border rounded-lg shadow-md max-w-xs z-10">
           <div>
             <strong className="text-lg font-semibold text-gray-800">Event Type</strong>
             <ul className="mt-2 space-y-1 text-gray-600">
@@ -44,40 +44,41 @@ export const BarChartComponent = ({ data = stationEvents }) => {
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <BarChart
+          <LineChart
             data={data}
-            barSize={30}
-            barCategoryGap={0}
             onMouseMove={(state) => {
               const index = state?.activeTooltipIndex;
               if (index !== undefined) {
-                setActiveIndex(index); // Highlight the active bar
+                setActiveIndex(index); // Highlight the active line
               }
             }}
             onMouseLeave={() => setActiveIndex(null)} // Reset highlight when leaving
           >
-            <CartesianGrid horizontal={false} vertical={false} /> {/* Remove any grid hover effects */}
+            <CartesianGrid horizontal={false} vertical={false} />
             <XAxis dataKey="category" tickLine={false} tickMargin={10} axisLine={false} />
             <YAxis />
             <Tooltip content={<ChartTooltipContent hideLabel />} />
             <Legend />
             {keys.map((key, index) => (
-              <Bar
+              <Line
                 key={key}
                 dataKey={key}
-                stackId="a"
-                fill={`hsl(var(--chart-${index + 1}))`}
+                type="monotone"
+                stroke={`hsl(var(--chart-${index + 1}))`}
                 name={key.replace(/([A-Z])/g, " $1").trim()}
+                strokeWidth={2}
+                dot={false}
+                activeDot={{ r: 6 }}
                 style={{
-                  opacity: activeIndex === index ? 1 : 0.7, // Highlight bar opacity on hover
-                  cursor: "pointer", // Only show pointer cursor on bars
+                  opacity: activeIndex === index ? 1 : 0.7, // Highlight line opacity on hover
+                  cursor: "pointer", // Only show pointer cursor on lines
                 }}
               />
             ))}
-          </BarChart>
+          </LineChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm bg-gradient-to-r from-green-500 via-red-500 to-yellow-500">
+      <CardFooter className="flex-col items-start gap-2 text-sm bg-gray-50">
         Showing event counts with dynamic data for each category.
       </CardFooter>
     </Card>
