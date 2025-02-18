@@ -251,4 +251,13 @@ export const WifiPerformanceTable = () => {
     </Table>
   );
 };
-
+Error: could not find react-redux context value; please ensure the component is wrapped in a <Provider>
+  at useSelector2 (/vendors-node_modules_reduxjs_toolkit_dist_query_react_rtk-query-react_modern_mjs.iframe.bundle.js:7684:26))
+  at WifiPerformanceTable (/stories-visualization-wifiperformancetable-stories.iframe.bundle.js:324:72))
+  at react-stack-bottom-frame (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:23644:20))
+  at renderWithHooks (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:4680:22))
+  at updateFunctionComponent (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:8066:19))
+  at beginWork (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:9723:18))
+  at runWithFiberInDEV (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:578:16))
+  at performUnitOfWork (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:15098:22))
+  at workLoopSync (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:14922:41))
