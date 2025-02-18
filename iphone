@@ -5,11 +5,11 @@ import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from "rec
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 
+// Example data that can be passed in as props
 const stationEvents = [
   { category: "iPhone", associated: 5, disassociated: 4 },
   { category: "Watch", associated: 3, disassociated: 3 }
 ];
-
 
 const chartConfig = {
   default: {
@@ -18,9 +18,10 @@ const chartConfig = {
   }
 } satisfies ChartConfig;
 
-export const BarChartComponent = ({ data }) => {
+export const BarChartComponent = ({ data = stationEvents }) => { // Default data to stationEvents
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
+  // Ensure data is available and not empty before processing keys
   const keys = data.length > 0 ? Object.keys(data[0]).filter(key => key !== "category") : [];
 
   return (
@@ -33,17 +34,24 @@ export const BarChartComponent = ({ data }) => {
         <ChartContainer config={chartConfig}>
           <BarChart
             data={data}
-            barSize={30} 
-            barCategoryGap={0} 
+            barSize={30}
+            barCategoryGap={0}
             onMouseMove={(state) => setActiveIndex(state?.activeTooltipIndex ?? null)}
-            onMouseLeave={() => setActiveIndex(null)}>
+            onMouseLeave={() => setActiveIndex(null)}
+          >
             <CartesianGrid vertical={false} />
             <XAxis dataKey="category" tickLine={false} tickMargin={10} axisLine={false} />
             <YAxis />
             <Tooltip content={<ChartTooltipContent hideLabel />} />
             <Legend />
             {keys.map((key, index) => (
-              <Bar key={key} dataKey={key} stackId="a" fill={`hsl(var(--chart-${index + 1}))`} name={key.replace(/([A-Z])/g, ' $1').trim()} />
+              <Bar
+                key={key}
+                dataKey={key}
+                stackId="a"
+                fill={`hsl(var(--chart-${index + 1}))`}
+                name={key.replace(/([A-Z])/g, ' $1').trim()}
+              />
             ))}
           </BarChart>
         </ChartContainer>
@@ -53,13 +61,4 @@ export const BarChartComponent = ({ data }) => {
       </CardFooter>
     </Card>
   );
-}; Error: Cannot read properties of undefined (reading 'length')
-  at react-stack-bottom-frame (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:23644:20))
-  at renderWithHooks (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:4680:22))
-  at updateFunctionComponent (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:8066:19))
-  at beginWork (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:9723:18))
-  at runWithFiberInDEV (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:578:16))
-  at performUnitOfWork (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:15098:22))
-  at workLoopSync (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:14922:41))
-  at renderRootSync (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:14902:11))
-  at performWorkOnRoot (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:14428:44))
+};
