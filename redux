@@ -1,0 +1,191 @@
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { FetchBaseQueryError } from '@reduxjs/toolkit/query'
+
+// Type definition for the API response
+interface StationEventCategory {
+  sn_evt_stations: string
+  station_name: string | null
+  stationevents_flag: string
+  st_event_hour: number
+  event_station_mac: string
+  snMac: string
+  event_tsd: bigint | null
+  Station_hr24: string | null
+  tsd: string | null
+  eventtype: string
+  eventreason: string
+}
+
+interface StationEventResponse {
+  data: StationEventCategory[]
+}
+
+interface WifiPerformance {
+  snmac: string | null
+  sn_router_mapsection: string | null
+  station_name: string | null
+  station_last_report: string | null
+  station_mac: string | null
+  station_ip: string | null
+  connection_type: string | null
+  link_rate: string | null
+  link_rate_max: string | null
+  channel: string | null
+  mode: number
+  signal_strength: number
+  signal_strength_max: number
+  signal_strength_min: number
+  stations_last_connect: string | null
+  ipv6_ip: string | null
+  node_id: string | null
+  ldur: string | null
+  lddr: string | null
+  rt: string | null
+  bs: string | null
+  br: string | null
+  txc: string | null
+  rxc: string | null
+  es: string | null
+  rtc: string | null
+  frc: string | null
+  rc: string | null
+  mrc: string | null
+  tx_link_rate: string | null
+  tx_link_rate_max: string | null
+  snr: string | null
+  bandwidth: number
+  max_tx_phy_rate: string | null
+  max_rx_phy_rate: string | null
+  stations_status: boolean
+  connected_time: string | null
+}
+
+interface WifiPerformanceResponse {
+  data: WifiPerformance[]
+}
+
+interface StationEventError {
+  error: string
+}
+
+export const stationEventByCategoryApi = createApi({
+  reducerPath: 'stationEventByCategoryApi',
+  baseQuery: fetchBaseQuery({ baseUrl: '/api' }),
+  endpoints: (builder) => ({
+    // Query for single SN
+    getStationEvents: builder.query<StationEventResponse, { sn: string; hoursBack?: number }>({
+      query: ({ sn, hoursBack = 24 }) => ({
+        url: '/station-event-by-category',
+        params: { sn, hoursBack }
+      }),
+      transformErrorResponse: (response: FetchBaseQueryError): StationEventError => ({
+        error: typeof response.data === 'object' && response.data && 'message' in response.data
+          ? (response.data.message as string)
+          : 'An error occurred'
+      }),
+    }),
+
+    getMultipleStationEvents: builder.query<
+      StationEventResponse,
+      { sns: string[]; hoursBack?: number }
+    >({
+      query: ({ sns, hoursBack = 24 }) => ({
+        url: '/station-event-by-category',
+        params: { 
+          sns: sns.join(','),
+          hoursBack 
+        }
+      }),
+    }),
+
+    getWifiPerformanceBySN: builder.query<
+    WifiPerformanceResponse,
+      { sn: string; hoursBack: number }
+    >({
+      query: ({ sn, hoursBack = 24 }) => ({
+        url: '/wifi-performance',
+        params: { 
+          sn: sn,
+          hoursBack 
+        }
+      }),
+    }),
+  }),
+})
+
+export const {
+  useGetStationEventsQuery,
+  useGetMultipleStationEventsQuery,
+  useGetWifiPerformanceBySNQuery,
+  useLazyGetStationEventsQuery,
+  useLazyGetMultipleStationEventsQuery,
+  useLazyGetWifiPerformanceBySNQuery,
+} = stationEventByCategoryApi
+
+
+"use client";
+
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table";
+import { useGetWifiPerformanceBySNQuery } from '@/redux/api/station-event-by-category-api'
+import { useSelector } from 'react-redux'
+import { selectSnFilter, selectHoursBack } from '@/redux/features/filters'
+
+
+export const WifiPerformanceTable = () => {
+  const sn = useSelector(selectSnFilter)
+  const hoursBack = useSelector(selectHoursBack)
+
+  const { data } = useGetWifiPerformanceBySNQuery(
+    { sn: sn || '', hoursBack: hoursBack || 24 },
+    { skip: !sn }
+  );
+
+  console.log("Wifi Performance : ", data);
+
+  return (
+    <Table className="wifi-performance-table">
+      <TableCaption>A list of your recent invoices.</TableCaption>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="w-[100px]">Status</TableHead>
+          <TableHead>Client & Vendor Name</TableHead>
+          <TableHead>Last Updated Time</TableHead>
+          <TableHead>Connected Time</TableHead>
+          <TableHead>Data Usage</TableHead>
+          <TableHead>Band Usage</TableHead>
+          <TableHead>Signal Strength</TableHead>
+          <TableHead>Avg Signal (24 Hrs.)</TableHead>
+          <TableHead>Link Rate (Mbps)</TableHead>
+          <TableHead>IP Address</TableHead>
+          <TableHead>Channel Number</TableHead>
+          <TableHead className="text-right">Retransmission</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        <TableRow>
+        <TableCell>Paid</TableCell>
+          <TableCell>Paid</TableCell>
+          <TableCell>Credit Card</TableCell>
+          <TableCell>Credit Card</TableCell>
+          <TableCell className="bgapply">Credit Card</TableCell>
+          <TableCell>Credit Card</TableCell>
+          <TableCell>Credit Card</TableCell>
+          <TableCell className="bgcolor">Credit Card</TableCell>
+          <TableCell>Credit Card</TableCell>
+          <TableCell>Credit Card</TableCell>
+          <TableCell>Credit Card</TableCell>
+          <TableCell className="text-right">$250.00</TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
+  );
+};
+
