@@ -21,6 +21,8 @@ const chartConfig = {
 export const BarChartComponent = () => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
+ const keys = data.length > 0 ? Object.keys(data[0]).filter(key => key !== "category") : [];
+
   return (
     <Card>
       <CardHeader>
@@ -30,7 +32,7 @@ export const BarChartComponent = () => {
       <CardContent>
         <ChartContainer config={chartConfig}>
           <BarChart
-            data={stationEvents}
+            data={data}
             barSize={30} 
             barCategoryGap={0} 
             onMouseMove={(state) => setActiveIndex(state?.activeTooltipIndex ?? null)}
@@ -40,13 +42,14 @@ export const BarChartComponent = () => {
             <YAxis />
             <Tooltip content={<ChartTooltipContent hideLabel />} />
             <Legend />
-            <Bar dataKey="associated" stackId="a" fill="#c0c0a0" name="Client associated" />
-            <Bar dataKey="disassociated" stackId="a" fill="#0a506d" name="Client disassociated" />
+            {keys.map((key, index) => (
+              <Bar key={key} dataKey={key} stackId="a" fill={`hsl(var(--chart-${index + 1}))`} name={key.replace(/([A-Z])/g, ' $1').trim()} />
+            ))}
           </BarChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
-        Showing event counts with single stacked bars for each category.
+        Showing event counts with dynamic data for each category.
       </CardFooter>
     </Card>
   );
