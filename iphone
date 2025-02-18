@@ -7,10 +7,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 
 const stationEvents = [
-  { category: "iPhone", type: "Client associated", count: 4 },
-  { category: "iPhone", type: "Client disassociated", count: 4 },
-  { category: "Watch", type: "Client associated", count: 3 },
-  { category: "Watch", type: "Client disassociated", count: 3 }
+  { category: "iPhone", associated: 4, disassociated: 4 },
+  { category: "Watch", associated: 3, disassociated: 3 }
 ];
 
 const chartConfig = {
@@ -33,6 +31,7 @@ export const StationEventsChart = () => {
         <ChartContainer config={chartConfig}>
           <BarChart
             data={stationEvents}
+            barSize={40} // Adjusted bar width
             onMouseMove={(state) => setActiveIndex(state?.activeTooltipIndex ?? null)}
             onMouseLeave={() => setActiveIndex(null)}>
             <CartesianGrid vertical={false} />
@@ -40,13 +39,13 @@ export const StationEventsChart = () => {
             <YAxis />
             <Tooltip content={<ChartTooltipContent hideLabel />} />
             <Legend />
-            <Bar dataKey="count" stackId="a" fill="#c0c0a0" name="Client associated" />
-            <Bar dataKey="count" stackId="a" fill="#0a506d" name="Client disassociated" />
+            <Bar dataKey="associated" stackId="a" fill="#c0c0a0" name="Client associated" />
+            <Bar dataKey="disassociated" stackId="a" fill="#0a506d" name="Client disassociated" />
           </BarChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
-        Showing event counts with stacked bars for each category.
+        Showing event counts with single stacked bars for each category.
       </CardFooter>
     </Card>
   );
