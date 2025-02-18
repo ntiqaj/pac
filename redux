@@ -264,7 +264,7 @@ Error: could not find react-redux context value; please ensure the component is 
 import type { Meta, StoryObj } from "@storybook/react"
 import { WifiPerformanceTable } from "@/components/visualization/wifi-performance-table"
 import { Provider } from 'react-redux';
-import { store } from '@/redux/store'; // Ensure the correct path to your Redux store
+import { Store } from "@reduxjs/toolkit";
 
 const meta: Meta<typeof WifiPerformanceTable> = {
   title: "visualization/WifiPerformanceTable",
