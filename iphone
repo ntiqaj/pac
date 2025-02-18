@@ -32,3 +32,54 @@ export default function StationEventsChart() {
     </div>
   );
 }
+"use client";
+
+import { useState } from "react";
+import { TrendingUp, TrendingDown } from "lucide-react";
+import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from "recharts";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
+
+const stationEvents = [
+  { category: "iPhone", associated: 4, disassociated: 4 },
+  { category: "Watch", associated: 3, disassociated: 3 }
+];
+
+const chartConfig = {
+  default: {
+    label: "Count",
+    color: "hsl(var(--chart-1))"
+  }
+} satisfies ChartConfig;
+
+export const StationEventsChart = () => {
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Station Events By Category</CardTitle>
+        <CardDescription>Event counts for devices in 2024</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer config={chartConfig}>
+          <BarChart
+            data={stationEvents}
+            onMouseMove={(state) => setActiveIndex(state?.activeTooltipIndex ?? null)}
+            onMouseLeave={() => setActiveIndex(null)}>
+            <CartesianGrid vertical={false} />
+            <XAxis dataKey="category" tickLine={false} tickMargin={10} axisLine={false} />
+            <YAxis />
+            <Tooltip content={<ChartTooltipContent hideLabel />} />
+            <Legend />
+            <Bar dataKey="associated" fill="#c0c0a0" radius={8} name="Client associated" />
+            <Bar dataKey="disassociated" fill="#0a506d" radius={8} name="Client disassociated" />
+          </BarChart>
+        </ChartContainer>
+      </CardContent>
+      <CardFooter className="flex-col items-start gap-2 text-sm">
+        Showing event counts for the selected period.
+      </CardFooter>
+    </Card>
+  );
+};
