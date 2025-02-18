@@ -1,112 +1,34 @@
-"use client"
+import React from 'react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid, ResponsiveContainer } from 'recharts';
 
-import { useState } from "react"
-import { TrendingUp, TrendingDown } from "lucide-react"
-import { Bar, BarChart, CartesianGrid, XAxis, Tooltip } from "recharts"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
-
-const chartData = [
-  { category: "Client associated", count: 4 },
-  { category: "Client disassociated", count: 2 },
-  { category: "iPhone", count: 4 },
-  { category: "Watch", count: 6 }
-]
-
-const chartConfig = {
-  default: {
-    label: "Count",
-    color: "hsl(var(--chart-1))"
+const stationEvents = [
+  {
+    category: "iPhone",
+    associated: 4,
+    disassociated: 4
+  },
+  {
+    category: "Watch",
+    associated: 3,
+    disassociated: 3
   }
-} satisfies ChartConfig
+];
 
-interface BarChartComponentProps {
-  title?: string
-  description?: string
-  data?: { [key: string]: string | number }[]
-}
-
-export const BarChartComponent = ({
-  title = "Station Events By Category",
-  data = chartData
-}: BarChartComponentProps) => {
-  const [activeIndex, setActiveIndex] = useState<number | null>(null)
-
-  const keys = data.length > 0 ? Object.keys(data[0]) : []
-  const nameKey = keys[0]
-  const dataKey = keys[1]
-  const dynamicLabel = dataKey ? dataKey.toLowerCase() : "data"
-  const dataCount = data.length
-
-  const calculatePercentageChange = (currentIndex: number) => {
-    if (currentIndex <= 0 || currentIndex >= data.length) return 0
-    const currentValue = Number(data[currentIndex]?.[dataKey]) || 0
-    const previousValue = Number(data[currentIndex - 1]?.[dataKey]) || 0
-    if (previousValue === 0) return 0
-    return ((currentValue - previousValue) / previousValue) * 100
-  }
-
-  const percentageChange = activeIndex !== null && activeIndex > 0 ? calculatePercentageChange(activeIndex) : 0
-  const isTrendingUp = percentageChange >= 0
-
-  const determineTimePeriod = (data: { [key: string]: string | number }[]) => {
-    const firstItem = data[0]
-    const lastItem = data[data.length - 1]
-
-    const startTime = firstItem[nameKey] as string
-    const endTime = lastItem[nameKey] as string
-    const descriptionParts = []
-
-    if (startTime && endTime) {
-      descriptionParts.push(`${startTime} - ${endTime}`)
-    }
-
-    return descriptionParts.join(" ")
-  }
-
-  const dynamicDescription = determineTimePeriod(data)
-
+export default function StationEventsChart() {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{dynamicDescription}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
-          <BarChart
-            accessibilityLayer
-            data={data}
-            onMouseMove={(state) => {
-              setActiveIndex(state?.activeTooltipIndex ?? null)
-            }}
-            onMouseLeave={() => setActiveIndex(null)}
-          >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey={nameKey}
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) => String(value).slice(0, 3)}
-            />
-            <Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <Bar dataKey={dataKey} fill="#C4B5FD" radius={8} />
-          </BarChart>
-        </ChartContainer>
-      </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
-          {isTrendingUp ? (
-            <>Trending up by {percentageChange.toFixed(2)}% this period <TrendingUp className="h-4 w-4" /></>
-          ) : (
-            <>Trending down by {Math.abs(percentageChange).toFixed(2)}% this period <TrendingDown className="h-4 w-4" /></>
-          )}
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total {dynamicLabel} for the last {dataCount} categories
-        </div>
-      </CardFooter>
-    </Card>
-  )
+    <div className="p-4 bg-white rounded-2xl shadow-lg">
+      <h2 className="text-xl font-bold mb-4">Station Events By Category</h2>
+      <ResponsiveContainer width="100%" height={400}>
+        <BarChart data={stationEvents}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="category" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Bar dataKey="associated" fill="#c0c0a0" name="Client associated" />
+          <Bar dataKey="disassociated" fill="#0a506d" name="Client disassociated" />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
 }
