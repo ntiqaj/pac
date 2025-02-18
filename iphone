@@ -28,7 +28,7 @@ export const StationEventsChart = () => {
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <ResponsiveContainer width="100%" height={300}> 
+          <ResponsiveContainer width="100%" height={300}>
             <BarChart
               data={stationEvents}
               layout="vertical"
@@ -37,8 +37,8 @@ export const StationEventsChart = () => {
               onMouseMove={(state) => setActiveIndex(state?.activeTooltipIndex ?? null)}
               onMouseLeave={() => setActiveIndex(null)}>
               <CartesianGrid horizontal={false} />
-              <XAxis type="number" />
-              <YAxis dataKey="category" type="category" tickLine={false} axisLine={false} angle={-90} textAnchor="end" /> {/* Rotated YAxis labels from bottom to top */}
+              <XAxis type="number" label={{ value: 'Count of Station Events', position: 'insideBottom', offset: -5 }} /> {/* Added label to XAxis */}
+              <YAxis dataKey="category" type="category" tickLine={false} axisLine={false} />
               <Tooltip content={<ChartTooltipContent hideLabel />} />
               <Legend />
               <Bar dataKey="associated" fill="#6a0dad" name="Client associated" />
@@ -52,4 +52,7 @@ export const StationEventsChart = () => {
       </CardFooter>
     </Card>
   );
-};
+};a
+
+// **Changes Highlighted:**
+// 1. Added `label={{ value: 'Count of Station Events', position: 'insideBottom', offset: -5 }}` to the `XAxis` to display axis title as in the provided screenshot.
