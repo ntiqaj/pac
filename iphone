@@ -31,7 +31,9 @@ export const StationEventsChart = () => {
         <ChartContainer config={chartConfig}>
           <BarChart
             data={stationEvents}
-            barSize={40} // Adjusted bar width
+            barSize={30} // Reduced bar width
+            barGap={0}   // Remove gap between bars
+            barCategoryGap={10} // Reduce space between categories
             onMouseMove={(state) => setActiveIndex(state?.activeTooltipIndex ?? null)}
             onMouseLeave={() => setActiveIndex(null)}>
             <CartesianGrid vertical={false} />
