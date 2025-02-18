@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { TrendingUp, TrendingDown } from "lucide-react";
-import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, Legend, LabelList } from "recharts";
+import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 
@@ -29,35 +28,28 @@ export const StationEventsChart = () => {
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <BarChart
-            data={stationEvents}
-            barSize={40} // Increased bar width to match screenshot
-            barCategoryGap={30} // Increased space between categories
-            onMouseMove={(state) => setActiveIndex(state?.activeTooltipIndex ?? null)}
-            onMouseLeave={() => setActiveIndex(null)}>
-            <CartesianGrid vertical={false} />
-            <XAxis dataKey="category" tickLine={false} tickMargin={10} axisLine={false} />
-            <YAxis domain={[0, 8]} /> {/* Adjusted Y-axis domain to 0-8 */}
-            <Tooltip content={<ChartTooltipContent hideLabel />} />
-            <Legend />
-            <Bar dataKey="associated" stackId="a" fill="#c0c0a0" name="Client associated">
-              <LabelList dataKey="associated" position="inside" /> {/* Added labels inside bars */}
-            </Bar>
-            <Bar dataKey="disassociated" stackId="a" fill="#0a506d" name="Client disassociated">
-              <LabelList dataKey="disassociated" position="inside" /> {/* Added labels inside bars */}
-            </Bar>
-          </BarChart>
+          <ResponsiveContainer width="100%" height={300}> 
+            <BarChart
+              data={stationEvents}
+              layout="vertical"
+              barSize={30}
+              barCategoryGap={10}
+              onMouseMove={(state) => setActiveIndex(state?.activeTooltipIndex ?? null)}
+              onMouseLeave={() => setActiveIndex(null)}>
+              <CartesianGrid horizontal={false} />
+              <XAxis type="number" />
+              <YAxis dataKey="category" type="category" tickLine={false} axisLine={false} angle={-90} textAnchor="end" /> {/* Rotated YAxis labels from bottom to top */}
+              <Tooltip content={<ChartTooltipContent hideLabel />} />
+              <Legend />
+              <Bar dataKey="associated" fill="#6a0dad" name="Client associated" />
+              <Bar dataKey="disassociated" fill="#ff6347" name="Client disassociated" />
+            </BarChart>
+          </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
-        Showing event counts with single stacked bars for each category.
+        Showing event counts with vertical stacked bars for each category.
       </CardFooter>
     </Card>
   );
 };
-
-// **Changes Highlighted:**
-// 1. Adjusted `barSize` to 40 and `barCategoryGap` to 30.
-// 2. Added `LabelList` inside each `Bar` to display count values.
-// 3. Modified `YAxis` to set domain from 0 to 8.
-// 4. Included necessary import `LabelList` from `recharts`.
