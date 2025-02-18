@@ -10,14 +10,14 @@ const stationEvents = [
   { category: "Watch", associated: 3, disassociated: 3 }
 ];
 
-const chartConfig = {
+const chartConfig: ChartConfig = {
   default: {
     label: "Count",
     color: "hsl(var(--chart-1))"
   }
-} satisfies ChartConfig;
+}; // Fixed type definition
 
-export const BarChartComponent = () => {
+export const StationEventsChart: React.FC = () => { // Added explicit type for component
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   return (
@@ -28,7 +28,7 @@ export const BarChartComponent = () => {
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={300}> 
             <BarChart
               data={stationEvents}
               layout="vertical"
@@ -37,8 +37,8 @@ export const BarChartComponent = () => {
               onMouseMove={(state) => setActiveIndex(state?.activeTooltipIndex ?? null)}
               onMouseLeave={() => setActiveIndex(null)}>
               <CartesianGrid horizontal={false} />
-              <XAxis type="number" label={{ value: 'Count of Station Events', position: 'insideBottom', offset: -5 }} /> {/* Added label to XAxis */}
-              <YAxis dataKey="category" type="category" tickLine={false} axisLine={false} />
+              <XAxis type="number" label={{ value: 'Count of Station Events', position: 'insideBottom', offset: -5 }} />
+              <YAxis dataKey="category" type="category" tickLine={false} axisLine={false} angle={-90} textAnchor="end" />
               <Tooltip content={<ChartTooltipContent hideLabel />} />
               <Legend />
               <Bar dataKey="associated" fill="#6a0dad" name="Client associated" />
@@ -52,21 +52,4 @@ export const BarChartComponent = () => {
       </CardFooter>
     </Card>
   );
-};a
-
-The component failed to render properly, likely due to a configuration issue in Storybook. Here are some common causes and how you can address them:
-
-Missing Context/Providers: You can use decorators to supply specific contexts or providers, which are sometimes necessary for components to render correctly. For detailed instructions on using decorators, please visit the Decorators documentation.
-Misconfigured Webpack or Vite: Verify that Storybook picks up all necessary settings for loaders, plugins, and other relevant parameters. You can find step-by-step guides for configuring Webpack or Vite with Storybook.
-Missing Environment Variables: Your Storybook may require specific environment variables to function as intended. You can set up custom environment variables as outlined in the Environment Variables documentation.
-ReferenceError: a is not defined
-    at ./src/components/charts/barchart.tsx (http://localhost:6006/stories-chart-component-barchart-stories.8d6675d57af80bd4a924.hot-update.js:327:1)
-    at options.factory (http://localhost:6006/runtime~main.iframe.bundle.js:654:31)
-    at __webpack_require__ (http://localhost:6006/runtime~main.iframe.bundle.js:28:33)
-    at fn (http://localhost:6006/runtime~main.iframe.bundle.js:313:21)
-    at ./src/stories/chart-component/barchart.stories.tsx (http://localhost:6006/stories-chart-component-barchart-stories.iframe.bundle.js:17:85)
-    at options.factory (http://localhost:6006/runtime~main.iframe.bundle.js:654:31)
-    at __webpack_require__ (http://localhost:6006/runtime~main.iframe.bundle.js:28:33)
-    at fn (http://localhost:6006/runtime~main.iframe.bundle.js:313:21)
-    at http://localhost:6006/main.iframe.bundle.js:4645:10
-    at async mn.importFn (http://localhost:6006/main.iframe.bundle.js:230:27)
+};
