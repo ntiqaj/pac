@@ -48,8 +48,14 @@ export const BarChartComponent = ({ data = stationEvents }) => {
             data={data}
             barSize={30}
             barCategoryGap={0}
-            onMouseMove={(state) => setActiveIndex(state?.activeTooltipIndex ?? null)} // Highlight bars only
-            onMouseLeave={() => setActiveIndex(null)} // Reset active index
+            onMouseMove={(state) => {
+              // Only highlight the bar, do not affect the background
+              const index = state?.activeTooltipIndex;
+              if (index !== undefined) {
+                setActiveIndex(index);
+              }
+            }}
+            onMouseLeave={() => setActiveIndex(null)} // Reset the highlight when cursor leaves the chart area
           >
             <CartesianGrid vertical={false} />
             <XAxis dataKey="category" tickLine={false} tickMargin={10} axisLine={false} />
@@ -63,8 +69,8 @@ export const BarChartComponent = ({ data = stationEvents }) => {
                 stackId="a"
                 fill={`hsl(var(--chart-${index + 1}))`}
                 name={key.replace(/([A-Z])/g, ' $1').trim()}
-                // Apply dynamic bar color changes on hover by updating the `activeIndex`
-                style={{ opacity: activeIndex === index ? 1 : 0.7 }} // Adjust bar opacity on hover
+                // Only apply the highlight effect to the bars
+                style={{ opacity: activeIndex === index ? 1 : 0.7 }} // Highlight bar on hover
               />
             ))}
           </BarChart>
