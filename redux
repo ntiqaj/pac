@@ -261,3 +261,22 @@ Error: could not find react-redux context value; please ensure the component is 
   at runWithFiberInDEV (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:578:16))
   at performUnitOfWork (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:15098:22))
   at workLoopSync (/vendors-node_modules_storybook_react-dom-shim_dist_react-18_mjs.iframe.bundle.js:14922:41))
+import type { Meta, StoryObj } from "@storybook/react"
+import { WifiPerformanceTable } from "@/components/visualization/wifi-performance-table"
+
+
+
+const meta: Meta<typeof WifiPerformanceTable> = {
+  title: "visualization/WifiPerformanceTable",
+  component: WifiPerformanceTable,
+  tags: ["autodocs"],
+}
+
+export default meta
+type Story = StoryObj<typeof WifiPerformanceTable>
+
+export const Default: Story = {
+  render: () => (
+    <WifiPerformanceTable />
+  ),
+} 
