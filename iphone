@@ -1,26 +1,26 @@
 "use client";
 
-import { useState } from "react"
-import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from "recharts"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
-
+import { useState } from "react";
+import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from "recharts";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 
 const stationEvents = [
   { category: "iPhone", associated: 5, disassociated: 4 },
-  { category: "Watch", associated: 3, disassociated: 3 }]
+  { category: "Watch", associated: 3, disassociated: 3 },
+];
 
 const chartConfig = {
   default: {
     label: "Count",
-    color: "hsl(var(--chart-1))"
-  }
-} satisfies ChartConfig
+    color: "hsl(var(--chart-1))",
+  },
+} satisfies ChartConfig;
 
-export const BarChartComponent = ({ data = stationEvents }) => { 
+export const BarChartComponent = ({ data = stationEvents }) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
-  const keys = data.length > 0 ? Object.keys(data[0]).filter(key => key !== "category") : []
+  const keys = data.length > 0 ? Object.keys(data[0]).filter((key) => key !== "category") : [];
 
   return (
     <Card>
@@ -49,15 +49,15 @@ export const BarChartComponent = ({ data = stationEvents }) => {
             barSize={30}
             barCategoryGap={0}
             onMouseMove={(state) => {
-              // Only highlight the bar, do not affect the background
+              // Only highlight the bars, not the background
               const index = state?.activeTooltipIndex;
               if (index !== undefined) {
-                setActiveIndex(index);
+                setActiveIndex(index); // Highlight the active bar
               }
             }}
-            onMouseLeave={() => setActiveIndex(null)} // Reset the highlight when cursor leaves the chart area
+            onMouseLeave={() => setActiveIndex(null)} // Reset the highlight when cursor leaves
           >
-            <CartesianGrid vertical={false} />
+            <CartesianGrid vertical={false} /> {/* Remove any hover effect for the grid */}
             <XAxis dataKey="category" tickLine={false} tickMargin={10} axisLine={false} />
             <YAxis />
             <Tooltip content={<ChartTooltipContent hideLabel />} />
@@ -68,9 +68,12 @@ export const BarChartComponent = ({ data = stationEvents }) => {
                 dataKey={key}
                 stackId="a"
                 fill={`hsl(var(--chart-${index + 1}))`}
-                name={key.replace(/([A-Z])/g, ' $1').trim()}
-                // Only apply the highlight effect to the bars
-                style={{ opacity: activeIndex === index ? 1 : 0.7 }} // Highlight bar on hover
+                name={key.replace(/([A-Z])/g, " $1").trim()}
+                // Only apply the highlight effect to the bars, not the background
+                style={{
+                  opacity: activeIndex === index ? 1 : 0.7, // Highlight bar opacity on hover
+                  cursor: "pointer", // Show pointer cursor only on bars
+                }}
               />
             ))}
           </BarChart>
@@ -80,5 +83,5 @@ export const BarChartComponent = ({ data = stationEvents }) => {
         Showing event counts with dynamic data for each category.
       </CardFooter>
     </Card>
-  )
-}
+  );
+};
