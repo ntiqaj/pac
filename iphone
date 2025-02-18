@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { TrendingUp, TrendingDown } from "lucide-react";
 import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from "recharts";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
@@ -11,6 +10,7 @@ const stationEvents = [
   { category: "Watch", associated: 3, disassociated: 3 }
 ];
 
+
 const chartConfig = {
   default: {
     label: "Count",
@@ -18,10 +18,10 @@ const chartConfig = {
   }
 } satisfies ChartConfig;
 
-export const BarChartComponent = () => {
+export const BarChartComponent = ({ data }) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
- const keys = data.length > 0 ? Object.keys(data[0]).filter(key => key !== "category") : [];
+  const keys = data.length > 0 ? Object.keys(data[0]).filter(key => key !== "category") : [];
 
   return (
     <Card>
