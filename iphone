@@ -62,77 +62,52 @@ export const BarChartComponent = ({ data = stationEvents }) => { // Default data
     </Card>
   );
 };
-"use client";
-
-import { useState } from "react"
-import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from "recharts"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
-
-
-const stationEvents = [
-  { category: "iPhone", associated: 5, disassociated: 4 },
-  { category: "Watch", associated: 3, disassociated: 3 }]
-
-const chartConfig = {
-  default: {
-    label: "Count",
-    color: "hsl(var(--chart-1))"
-  }
-} satisfies ChartConfig
-
-export const BarChartComponent = ({ data = stationEvents }) => { 
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
-
-  const keys = data.length > 0 ? Object.keys(data[0]).filter(key => key !== "category") : []
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Station Events By Category</CardTitle>
-        <CardDescription className="text-right flex-grow p-4 bg-white border rounded-lg shadow-md">
-  <div>
-    <strong className="text-lg font-semibold text-gray-800">Event Type</strong>
-    <ul className="mt-2 space-y-1 text-gray-600">
-      <li className="flex items-center">
-        <span className="inline-block w-3 h-3 mr-2 bg-green-500 rounded-full"></span>
-        Client associated
-      </li>
-      <li className="flex items-center">
-        <span className="inline-block w-3 h-3 mr-2 bg-red-500 rounded-full"></span>
-        Client disassociated
-      </li>
-    </ul>
-  </div>
-</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
-          <BarChart
-            data={data}
-            barSize={30}
-            barCategoryGap={0}
-            onMouseMove={(state) => setActiveIndex(state?.activeTooltipIndex ?? null)}
-            onMouseLeave={() => setActiveIndex(null)}
-          >
-            <CartesianGrid vertical={false} />
-            <XAxis dataKey="category" tickLine={false} tickMargin={10} axisLine={false} />
-            <YAxis />
-            <Tooltip content={<ChartTooltipContent hideLabel />} />
-            <Legend />
-            {keys.map((key, index) => (
-              <Bar
-                key={key}
-                dataKey={key}
-                stackId="a"
-                fill={`hsl(var(--chart-${index + 1}))`}
-                name={key.replace(/([A-Z])/g, ' $1').trim()}/>))}
-          </BarChart>
-        </ChartContainer>
-      </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        Showing event counts with dynamic data for each category.
-      </CardFooter>
-    </Card>
-  )}
-
+<Card>
+  <CardHeader className="relative">
+    <CardTitle>Station Events By Category</CardTitle>
+    <CardDescription className="absolute top-0 right-0 p-4 bg-white border rounded-lg shadow-md max-w-xs">
+      <div>
+        <strong className="text-lg font-semibold text-gray-800">Event Type</strong>
+        <ul className="mt-2 space-y-1 text-gray-600">
+          <li className="flex items-center">
+            <span className="inline-block w-3 h-3 mr-2 bg-green-500 rounded-full"></span>
+            Client associated
+          </li>
+          <li className="flex items-center">
+            <span className="inline-block w-3 h-3 mr-2 bg-red-500 rounded-full"></span>
+            Client disassociated
+          </li>
+        </ul>
+      </div>
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    <ChartContainer config={chartConfig}>
+      <BarChart
+        data={data}
+        barSize={30}
+        barCategoryGap={0}
+        onMouseMove={(state) => setActiveIndex(state?.activeTooltipIndex ?? null)}
+        onMouseLeave={() => setActiveIndex(null)}
+      >
+        <CartesianGrid vertical={false} />
+        <XAxis dataKey="category" tickLine={false} tickMargin={10} axisLine={false} />
+        <YAxis />
+        <Tooltip content={<ChartTooltipContent hideLabel />} />
+        <Legend />
+        {keys.map((key, index) => (
+          <Bar
+            key={key}
+            dataKey={key}
+            stackId="a"
+            fill={`hsl(var(--chart-${index + 1}))`}
+            name={key.replace(/([A-Z])/g, ' $1').trim()}
+          />
+        ))}
+      </BarChart>
+    </ChartContainer>
+  </CardContent>
+  <CardFooter className="flex-col items-start gap-2 text-sm">
+    Showing event counts with dynamic data for each category.
+  </CardFooter>
+</Card>
