@@ -62,3 +62,18 @@ export const BarChartComponent = ({ data = stationEvents }) => { // Default data
     </Card>
   );
 };
+<CardDescription className="text-right flex-grow p-4 bg-white border rounded-lg shadow-md">
+  <div>
+    <strong className="text-lg font-semibold text-gray-800">Event Type</strong>
+    <ul className="mt-2 space-y-1 text-gray-600">
+      <li className="flex items-center">
+        <span className="inline-block w-3 h-3 mr-2 bg-green-500 rounded-full"></span>
+        Client associated
+      </li>
+      <li className="flex items-center">
+        <span className="inline-block w-3 h-3 mr-2 bg-red-500 rounded-full"></span>
+        Client disassociated
+      </li>
+    </ul>
+  </div>
+</CardDescription>
