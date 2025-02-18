@@ -30,19 +30,22 @@ export const StationEventsChart = () => {
       <CardContent>
         <ChartContainer config={chartConfig}>
           <BarChart
-            data={stationEvents}
-            barSize={20} // Adjusted bar width
-            barCategoryGap={0} // Reduced space between categories
-            onMouseMove={(state) => setActiveIndex(state?.activeTooltipIndex ?? null)}
-            onMouseLeave={() => setActiveIndex(null)}>
-            <CartesianGrid vertical={false} />
-            <XAxis dataKey="category" tickLine={false} tickMargin={10} axisLine={false} />
-            <YAxis />
-            <Tooltip content={<ChartTooltipContent hideLabel />} />
-            <Legend />
-            <Bar dataKey="associated" stackId="a" fill="#c0c0a0" name="Client associated" />
-            <Bar dataKey="disassociated" stackId="a" fill="#0a506d" name="Client disassociated" />
-          </BarChart>
+  data={stationEvents}
+  barSize={20} // Adjusted bar width
+  barCategoryGap={2} // Slightly reduced space between categories
+  margin={{ top: 10, right: 30, left: 10, bottom: 10 }} // Adjust margins to reduce the empty space
+  onMouseMove={(state) => setActiveIndex(state?.activeTooltipIndex ?? null)}
+  onMouseLeave={() => setActiveIndex(null)}
+>
+  <CartesianGrid vertical={false} />
+  <XAxis dataKey="category" tickLine={false} tickMargin={10} axisLine={false} />
+  <YAxis />
+  <Tooltip content={<ChartTooltipContent hideLabel />} />
+  <Legend />
+  <Bar dataKey="associated" stackId="a" fill="#c0c0a0" name="Client associated" />
+  <Bar dataKey="disassociated" stackId="a" fill="#0a506d" name="Client disassociated" />
+</BarChart>
+
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
