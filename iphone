@@ -83,7 +83,8 @@ export const StationEventsChart = () => {
     </Card>
   );
 };
-"use client";
+
+  "use client";
 
 import { useState } from "react";
 import { TrendingUp, TrendingDown } from "lucide-react";
@@ -136,4 +137,4 @@ export const StationEventsChart = () => {
     </Card>
   );
 };
-
+     
