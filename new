@@ -1,63 +1,264 @@
-"use client"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 
+import * as React from "react";
+import { ColumnDef } from "@tanstack/react-table";
 import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from "@/components/ui/table";
-import { useGetWifiPerformanceBySNQuery } from '@/redux/api/station-event-by-category-api'
-import { useSelector } from 'react-redux'
-import { selectSnFilter, selectHoursBack } from '@/redux/features/filters'
+  useGetWifiPerformanceBySNQuery,
+  WifiPerformance
+} from "@/redux/api/station-event-by-category-api";
+import { useSelector } from "react-redux";
+import { selectSnFilter, selectHoursBack } from "@/redux/features/filters";
+import { ShieldCheck, ShieldX, ArrowUpDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { DataTable } from "@/components/ui/data-table";
+import { useEffect, useState } from "react";
+import moment from "moment";
+
+const columns: ColumnDef<WifiPerformance>[] = [
+  {
+    accessorKey: "stations_status",
+    header: "Status",
+    cell: ({ row }) => {
+      const stations_status = Boolean(row.getValue("stations_status"));
+      return stations_status ? (
+        <ShieldCheck size={32} color="#11a706" />
+      ) : (
+        <ShieldX size={32} color="#e40707" />
+      );
+    }
+  },
+  {
+    accessorKey: "station_name",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Client & Vendor Name
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    }
+  },
+  {
+    accessorKey: "stations_last_connect",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Last Updated Time
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const last_connect = row.getValue("stations_last_connect");
+      return moment(`${last_connect}`).format("DD-MM-YYYY hh:mm:ss A");
+    }
+  },
+  {
+    accessorKey: "connected_time",
+    header: "Connected Time",
+    cell: () => {
+      return "0 Hrs 0 min";
+    }
+  },
+  {
+    accessorKey: "bsbr",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Data Usage
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const bsbr = Number(row.getValue("bsbr"));
+      if (bsbr >= 1024 * 1024 * 1024) {
+        return `${(Number(bsbr) / (1024 * 1024 * 1024)).toFixed(2)}GB`;
+      } else if (bsbr >= 1024 * 1024) {
+        return `${(Number(bsbr) / (1024 * 1024)).toFixed(2)}MB`;
+      } else {
+        return `${(Number(bsbr) / 1024).toFixed(2)}KB`;
+      }
+    }
+  },
+  {
+    accessorKey: "connection_type",
+    header: "Band Usage"
+  },
+  {
+    accessorKey: "signal_strength",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Signal Strength
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const connection_type = row.getValue("connection_type");
+      const signal_strength = Number(row.getValue("signal_strength"));
+
+      if (connection_type === "2.4G") {
+        if (signal_strength <= -78) {
+          return (
+            <div className="poor-signal-strength">{`${signal_strength} (Poor)`}</div>
+          );
+        } else if (signal_strength <= -71 && signal_strength >= -77) {
+          return (
+            <div className="fair-signal-strength">{`${signal_strength} (Fair)`}</div>
+          );
+        } else if (signal_strength <= -56 && signal_strength >= -70) {
+          return (
+            <div className="good-signal-strength">{`${signal_strength} (Good)`}</div>
+          );
+        } else if (signal_strength >= -55) {
+          return (
+            <div className="excellent-signal-strength">{`${signal_strength} (Excellent)`}</div>
+          );
+        }
+      } else {
+        if (signal_strength <= -75) {
+          return (
+            <div className="poor-signal-strength">{`${signal_strength} (Poor)`}</div>
+          );
+        } else if (signal_strength <= -71 && signal_strength >= -74) {
+          return (
+            <div className="fair-signal-strength">{`${signal_strength} (Fair)`}</div>
+          );
+        } else if (signal_strength <= -56 && signal_strength >= -70) {
+          return (
+            <div className="good-signal-strength">{`${signal_strength} (Good)`}</div>
+          );
+        } else if (signal_strength >= -55) {
+          return (
+            <div className="excellent-signal-strength">{`${signal_strength} (Excellent)`}</div>
+          );
+        }
+      }
+    }
+  },
+  {
+    accessorKey: "signal_strength_avg",
+    header: "Avg Signal (24 Hrs.)"
+    // cell: ({ row }) => {
+    //   const signal_strength_avg = row.getValue("signal_strength_avg");
+    //   return <div className="excellent-"></div>;
+    // }
+  },
+  {
+    accessorKey: "link_rate",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Link Rate (Mbps)
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const connection_type = row.getValue("connection_type");
+      const link_rate = Number(row.getValue("link_rate"));
+
+      if (connection_type === "2.4G") {
+        if (link_rate <= 80) {
+          return <div className="poor-link-rate">{`${link_rate} (Poor)`}</div>;
+        } else if (link_rate >= 80 && link_rate <= 100) {
+          return <div className="fair-link-rate">{`${link_rate} (Fair)`}</div>;
+        } else if (link_rate >= 101 && link_rate <= 120) {
+          return <div className="good-link-rate">{`${link_rate} (Good)`}</div>;
+        } else if (link_rate >= 121) {
+          return (
+            <div className="excellent-link-rate">{`${link_rate} (Excellent)`}</div>
+          );
+        }
+      } else {
+        if (link_rate <= 200) {
+          return <div className="poor-link-rate">{`${link_rate} (Poor)`}</div>;
+        } else if (link_rate >= 201 && link_rate <= 350) {
+          return <div className="fair-link-rate">{`${link_rate} (Fair)`}</div>;
+        } else if (link_rate >= 351 && link_rate <= 500) {
+          return <div className="good-link-rate">{`${link_rate} (Good)`}</div>;
+        } else if (link_rate >= 501) {
+          return (
+            <div className="excellent-link-rate">{`${link_rate} (Excellent)`}</div>
+          );
+        }
+      }
+    }
+  },
+  {
+    accessorKey: "station_ip",
+    header: "IP Address"
+  },
+  {
+    accessorKey: "channel",
+    header: "Channel Number"
+  },
+  {
+    accessorKey: "rtc",
+    header: "Retransmission"
+  }
+];
 
 export const WifiPerformanceTable = () => {
-  const sn = useSelector(selectSnFilter)
-  const hoursBack = useSelector(selectHoursBack)
-
-  const { data } = useGetWifiPerformanceBySNQuery(
-    { sn: sn || '', hoursBack: hoursBack || 24 },
+  const sn = useSelector(selectSnFilter);
+  const hoursBack = useSelector(selectHoursBack);
+  const [tdata, setTData] = useState([]);
+  const { data: WifiPerformanceRecords } = useGetWifiPerformanceBySNQuery(
+    { sn: sn || "", hoursBack: hoursBack || 24 },
     { skip: !sn }
-  )
+  );
+
+  useEffect(() => {
+    let results = [] as any;
+    if (
+      WifiPerformanceRecords &&
+      WifiPerformanceRecords?.data &&
+      WifiPerformanceRecords?.data?.length
+    ) {
+      results = WifiPerformanceRecords?.data.map((v) => {
+        return {
+          stations_status: v.stations_status,
+          station_name: v.station_name,
+          stations_last_connect: v.stations_last_connect,
+          connected_time: v.connected_time,
+          connection_type: v.connection_type,
+          signal_strength: v.signal_strength,
+          signal_strength_avg: v.signal_strength,
+          bsbr: Number(v.bs) + Number(v.br),
+          link_rate: v.link_rate?.replace("Mbps", ""),
+          station_ip: v.station_ip,
+          channel: v.channel,
+          rtc: v.rtc
+        };
+      });
+    }
+    setTData(results);
+  }, [WifiPerformanceRecords]);
 
   return (
-    <Table className="wifi-performance-table">
-      <TableHeader>
-        
-        <TableRow>
-          <TableHead className="w-[100px]">Status</TableHead>
-          <TableHead>Client & Vendor Name</TableHead>
-          <TableHead>Last Updated Time</TableHead>
-          <TableHead>Connected Time</TableHead>
-          <TableHead>Data Usage</TableHead>
-          <TableHead>Band Usage</TableHead>
-          <TableHead>Signal Strength</TableHead>
-          <TableHead>Avg Signal (24 hrs)</TableHead>
-          <TableHead>Link Rate (Mbps)</TableHead>
-          <TableHead>IP Address</TableHead>
-          <TableHead>Channel No</TableHead>
-          <TableHead className="text-right">Retransmission</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {data?.data.map((item, index) => (
-          <TableRow key={index}>
-            <TableCell>{item.stations_status ? '●' : '○'}</TableCell>
-            <TableCell>{item.station_name}</TableCell>
-            <TableCell>{item.station_last_report}</TableCell>
-            <TableCell>{item.connected_time}</TableCell>
-            <TableCell>{item.ldur}</TableCell>
-            <TableCell>{item.bs}</TableCell>
-            <TableCell>{`${item.signal_strength} (${item.signal_strength > -70 ? 'Good' : 'Poor'})`}</TableCell>
-            <TableCell>{item.snr}</TableCell>
-            <TableCell>{item.link_rate}</TableCell>
-            <TableCell>{item.station_ip}</TableCell>
-            <TableCell>{item.channel}</TableCell>
-            <TableCell className="text-right">{item.rtc}</TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  )}
+    <DataTable
+      columns={columns}
+      data={tdata}
+      title="Wifi Performance"
+      emptyDescription="No records available for the given search wifi performance."
+    />
+  );
+};
